@@ -11,14 +11,16 @@ import java.util.Hashtable;
 
 import org.json.simple.parser.ParseException;
 
+import com.action.Action;
+import com.action.AuthenticateUserAction;
 import com.client.ClientPayloadService;
-import com.controller.AuthenticateUserController;
 import com.controller.Controller;
 import com.exception.DataSerializationException;
 import com.exception.InvalidArgumentException;
 import com.exception.InvalidOperationException;
 import com.factory.ControllerFactory;
 import com.factory.DataSerializerFactory;
+import com.factory.UserActionFactory;
 import com.utility.ProtocolConstant;
 import com.utility.core.CommunicationProtocol;
 import com.utility.core.DataSerializer;
@@ -60,11 +62,8 @@ public class ClientThread implements Runnable{
 	private void readClientRequest() throws IOException, ParseException, DataSerializationException, InvalidArgumentException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {
 		System.out.println("In read client request");
 		final BufferedReader clientInput = socketHelper.getReader(clientSocket);
-		System.out.println(" 58 In read client request");
-		System.out.println(clientInput);
         final String protocolFormat = clientInput.readLine().split("=")[1].trim();
         System.out.println(protocolFormat);
-        System.out.println(" 60 In read client request");
         final StringBuilder protocolBody = new StringBuilder();
         System.out.println(" 62 In read client request");
         while(clientInput.ready()) {
@@ -84,11 +83,11 @@ public class ClientThread implements Runnable{
 	private void processClientRequest(CommunicationProtocol requestProtocol) throws InvalidArgumentException, DataSerializationException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {
         System.out.println("In processClientRequest");
 		final String requestActionName = requestProtocol.getHeaders().get(ProtocolConstant.ACTION_NAME);
-        final AuthenticateUserController authenticator = new AuthenticateUserController();
-        final String data = requestProtocol.getData();
+        final Action action = UserActionFactory.getInstance(requestActionName);
+        final String data = requestProtocol.getData()+"="+requestActionName;
         CommunicationProtocol responseProtocol = null;
         try {
-        	final String responseData = authenticator.handleAuthorization(data);
+        	final String responseData = action.handleAction(data);
             System.out.println("in client thread");
             responseProtocol = prepareSuccessResponse(responseData);
         } catch (Exception issue) {

@@ -1,25 +1,30 @@
 package com.controller;
 
 import java.sql.SQLException;
+import java.util.Hashtable;
 
 import com.client.ClientInputHandler;
 import com.console.ConsoleService;
 import com.exception.InvalidArgumentException;
 import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
+import com.model.Menu;
+import com.service.MenuService;
+import com.utility.ActionChoiceConstant;
 
 public class AdminController implements Controller{
 
 	@Override
 	public void handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException {
-		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
-	    String inputsToProcess[] = getAdminAction();
-	    clientInputHandler.processArguments(inputsToProcess);
-	    clientInputHandler.processOperation();
+		
+		getAdminAction();
+	    
 	}
 
-	private String[] getAdminAction() {
-		String userInputAction[] = null;
+	private void getAdminAction() throws InvalidArgumentException {
+		final MenuService menuService = new MenuService();
+		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
+		Hashtable<String, Object> inputsToProcess;
 		String actions = "Please choose an option\n"+
 	                      "1. Add Item\n"+
 				          "2. View Menu\n"+
@@ -32,20 +37,38 @@ public class AdminController implements Controller{
         boolean endProcess = false;
         do {
               choice = ConsoleService.getUserInput(actions);
-
+              Menu item;
             // Perform action based on user choice
             switch (choice) {
                 case "1":
-                	userInputAction = new String[] {"Add_Item","Admin","Database"}; 
+                	item = menuService.addItem();
+                    inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess.put("Admin:add", item);
+                	clientInputHandler.processArguments(inputsToProcess);
+            	    clientInputHandler.processOperation();
                     break;
                 case "2":
-                	userInputAction = new String[] {"View_Menu","Admin","Database"};
+                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess.put("Admin:view", "viewMenu");
+                	clientInputHandler.processArguments(inputsToProcess);
+            	    clientInputHandler.processOperation();
+                	//userInputAction = new String[] {"View_Menu","Admin","Database"};
                     break;
                 case "3":
-                    userInputAction = new String[] {"Update_Menu","Admin","Database"};
+                	item = menuService.updateItem();
+                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess.put("Admin:update", item);
+                	clientInputHandler.processArguments(inputsToProcess);
+            	    clientInputHandler.processOperation();
+                    //userInputAction = new String[] {"Update_Menu","Admin","Database"};
                     break;
                 case "4":
-                	userInputAction = new String[] {"Delete_Item","Admin","Database"};
+                	item = menuService.getDeleteItem();
+                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess.put("Admin:delete", item);
+                	clientInputHandler.processArguments(inputsToProcess);
+            	    clientInputHandler.processOperation();
+                	//userInputAction = new String[] {"Delete_Item","Admin","Database"};
                     break;
                 case "5":
                 	endProcess = true;
@@ -57,7 +80,7 @@ public class AdminController implements Controller{
 
             System.out.println(); // Print a newline for better readability
         } while (!endProcess);
-        return userInputAction;
+        //return inputsToProcess;
 		
 	}
 

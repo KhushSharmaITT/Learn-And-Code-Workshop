@@ -1,4 +1,4 @@
-package com.controller;
+package com.action;
 
 import java.sql.SQLException;
 
@@ -13,7 +13,7 @@ import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
 import com.utility.user.UserWrapper;
 
-public class AuthenticateUserController {
+public class AuthenticateUserAction implements Action{
 	
 	private JsonWrapper<RequestWrapper> jsonWrapper;
 	private UserService userService;
@@ -21,7 +21,7 @@ public class AuthenticateUserController {
 	public UserPayload userResponsePayload;
 	private UserPayloadHelper<UserPayload> userPayloadHelper;
 	
-	public AuthenticateUserController() {
+	public AuthenticateUserAction() {
 		this.jsonWrapper = new JsonWrapper<>(RequestWrapper.class);
         this.jsonWrapper.setPrettyFormat(true);
         this.userService = new UserService();
@@ -29,19 +29,16 @@ public class AuthenticateUserController {
         this.userPayloadHelper = new UserPayloadHelper<UserPayload>();
 	}
     
-	public String handleAuthorization(String data) throws InvalidDataException, SQLException, UserNotFoundException {
+	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException {
     	
     	System.out.println("yeahhhhhh finally");
-    	RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(data);
+    	final String dataToProcess = data.split("=")[0].trim();
+    	RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
     	UserPayload userRequestPayload = userService.prepareUserPayload(requestWrapper);
     	prepareUserResponse(userRequestPayload);
-    	//final ResponseWrapper responseWrapper = new ResponseWrapper();
-    	System.out.println(userResponsePayload.getUserWrapperDetails().getRole());
     	userPayloadHelper.setPayload(this.userResponsePayload);
-    	System.out.println((userPayloadHelper.getResponseWrapper().jsonString));
     	JsonWrapper<ResponseWrapper> jsonResponseWrapper = new JsonWrapper<>(ResponseWrapper.class);
     	jsonResponseWrapper.setPrettyFormat(true);
-        System.out.println("in auth");
         String jsonString = jsonResponseWrapper.convertIntoJson(userPayloadHelper.getResponseWrapper());
     	return jsonString+"="+userResponsePayload.getUserWrapperDetails().getRole();
 }

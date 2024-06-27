@@ -36,8 +36,7 @@ public class UserService {
 		ResultSet cursor = repository.find(userToAuthenticate.getEmailId());
 		if (cursor != null && cursor.next()) {
 			userRole = cursor.getString("Role");
-			}
-		else {
+			}else {
 			throw new UserNotFoundException(ErrorMessageConstant.NO_USER_FOUND);
 		}
 		return userRole;
