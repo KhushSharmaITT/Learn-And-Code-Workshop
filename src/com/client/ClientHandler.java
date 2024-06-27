@@ -25,6 +25,7 @@ import com.utility.core.CommunicationProtocol;
 import com.utility.core.DataSerializer;
 import com.utility.core.RequestWrapper;
 import com.utility.SocketHelper;
+import com.payload.MenuPayloadHelper;
 import com.payload.UserPayload;
 import com.payload.UserPayloadHelper;
 
@@ -33,7 +34,7 @@ public class ClientHandler {
     private static ClientHandler handler;
     private SocketHelper socketHelper;
     private ClientInputHandler inputHandler;
-    private String userInputs[];
+    private Hashtable<String, Object> userInputs;
 
     public static ClientHandler getInstance() throws UnknownHostException, IOException {
         if(handler == null) {
@@ -44,13 +45,13 @@ public class ClientHandler {
     
     private ClientHandler() throws UnknownHostException, IOException {
         this.inputHandler = ClientInputHandler.getInstance();
-        this.userInputs = loadInputData();
         client = new Socket("localhost", 9999);
         socketHelper = SocketHelper.getInstance();
     }
 
     public void startClient() throws IOException, DataSerializationException, ParseException, InvalidArgumentException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException, SQLException, UserNotFoundException {
         System.out.println("Client started");
+        this.userInputs = loadInputData();
         sendRequestToServer();
         System.out.println("Waiting from server");
         readServerResponse();
@@ -59,19 +60,30 @@ public class ClientHandler {
     private void sendRequestToServer() throws IOException, DataSerializationException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	final ClientPayloadService clientService = new ClientPayloadService(prepareRequestDetails());
     	final DataSerializer serializer = DataSerializerFactory.getInstance("json");
+    	String actionName = inputHandler.getActionName();
     	CommunicationProtocol protocol = null;
-    	if(userInputs[0] == ActionChoiceConstant.AUTHENTICATE_USER) {
-    		final UserPayloadHelper<RequestWrapper> userPayload = new UserPayloadHelper<RequestWrapper>(userInputs);
+    	if(actionName == ActionChoiceConstant.AUTHENTICATE_USER) {  //create a factory pattern for this also to reduce the code.(for payload)
+    		final UserPayloadHelper<RequestWrapper> userPayload = new UserPayloadHelper<RequestWrapper>(userInputs);// refactor this code after the implementation send only the object
             final RequestWrapper requestWrapper = userPayload.getPayload();
             protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
+    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)) {
+    		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<RequestWrapper>(userInputs);
+    		final RequestWrapper requestWrapper = menuPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    	}
+//    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.ADMIN_VIEW)) {
+//    		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<RequestWrapper>();
+//    		final RequestWrapper requestWrapper = menuPayload.getPayload();
+//    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+//    	}
 //    	else if(userInputs[1] == ActionChoiceConstant.ADMIN) {
 //    		final UserPayloadHelper userPayload = new UserPayloadHelper(userInputs);
 //            final RequestWrapper requestWrapper = userPayload.getPayload();
 //            protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
 //    	}
         
-        System.out.println(protocol.toString());
+        //System.out.println(protocol.toString());
         System.out.println(protocol.getHeaders());
         System.out.println("56");
         final OutputStreamWriter socketWriter = socketHelper.getWriter(client);
@@ -107,20 +119,25 @@ public class ClientHandler {
      private void processServerResponse(CommunicationProtocol responseProtocol) throws InvalidOperationException, SQLException, UserNotFoundException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataSerializationException {
         if(responseProtocol.getStatusCode() == ProtocolConstant.SUCCESS_CODE) {
             final String actionName = responseProtocol.getHeaders().get("actionName");
-            final Controller controller = ControllerFactory.getInstance(actionName);
             final String data = responseProtocol.getData();
-            try {
-                controller.handleAction(data);
-                //System.out.println(responseData);
-            } catch(InvalidDataException| InvalidArgumentException issue) {
-                System.out.println("Failed to created output = "+issue.getLocalizedMessage());
+            if(actionName.equals(ActionChoiceConstant.ADMIN)||actionName.equals(ActionChoiceConstant.CHEF)||actionName.equals(ActionChoiceConstant.EMPLOYEE)) {
+            	final Controller controller = ControllerFactory.getInstance(actionName);
+                try {
+                    controller.handleAction(data);
+                    //System.out.println(responseData);
+                } catch(InvalidDataException| InvalidArgumentException issue) {
+                    System.out.println("Failed to created output = "+issue.getLocalizedMessage());
+                }
+            }
+            else {
+            	System.out.println(data);
             }
         } else if(responseProtocol.getStatusCode() == ProtocolConstant.ERROR_CODE) {
             System.out.println("Server Response : "+responseProtocol.getErrorMessage() +", Response Code = "+responseProtocol.getStatusCode());
         }
     }
 
-    private String[] loadInputData() throws IOException {
+    private Hashtable<String,Object> loadInputData() throws IOException {
         //final String inputArguments[] = inputHandler.getInputArguments();
 //        final StringBuilder textBuilder = new StringBuilder();
 //        for (int index = 1; index < inputArguments.length; index++) {

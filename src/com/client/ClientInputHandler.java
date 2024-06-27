@@ -8,11 +8,14 @@ import org.json.simple.parser.ParseException;
 
 import com.exception.DataSerializationException;
 import com.exception.InvalidArgumentException;
+import com.model.Menu;
+import com.utility.ActionChoiceConstant;
+import com.utility.user.UserWrapper;
 
 public class ClientInputHandler {
 
 	private Hashtable<String, String> operations;
-	private String userInput[];
+	private Hashtable<String,Object> userInput;
     private static ClientInputHandler clientInputHandler;
     private Scanner keyboardInput;
 
@@ -28,18 +31,21 @@ public class ClientInputHandler {
         keyboardInput = new Scanner(System.in);
         //this.userInput = new String[] {};
     }
-    public void processArguments(String[] arguments) throws InvalidArgumentException{
+    public void processArguments(Hashtable<String, Object> arguments) throws InvalidArgumentException{
     	this.userInput = arguments;
-        if(userInput.length <= 0) {
-            throw new InvalidArgumentException("Cannot proceed, no arguments passed");
-        }
-        else if(userInput.length > 0){
-            for(int index = 1; index < userInput.length; index += 1) {
-            	if(userInput[index].trim().isEmpty()) {
-            		throw new InvalidArgumentException("Cannot proceed, no inputs given");
-            	}
-            }
-        }
+//    	Menu itemMenu = (Menu) arguments.get(ActionChoiceConstant.ADMIN_ADD);
+//		System.out.println(itemMenu.getName());
+//    	UserWrapper userToAuthentaicate = arguments.get()
+//        if(userInput.get <= 0) {
+//            throw new InvalidArgumentException("Cannot proceed, no arguments passed");
+//        }
+//        else if(userInput.length > 0){
+//            for(int index = 1; index < userInput.length; index += 1) {
+//            	if(userInput[index].trim().isEmpty()) {
+//            		throw new InvalidArgumentException("Cannot proceed, no inputs given");
+//            	}
+//            }
+//        }
     }
     
     public void processOperation() {
@@ -55,11 +61,12 @@ public class ClientInputHandler {
         }
     }
     
-    public String[] getInputArguments() {
+    public Hashtable<String,Object> getInputArguments() {
+    	
         return userInput;
     }
 
 	public String getActionName() {
-		return userInput[0];
+		return (String) userInput.keySet().toArray()[0];
 	}
 }

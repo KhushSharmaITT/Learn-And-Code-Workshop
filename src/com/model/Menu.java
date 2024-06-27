@@ -1,12 +1,20 @@
 package com.model;
 
+import com.google.gson.annotations.Expose;
+
 public class Menu {
 
+	@Expose
 	private int menuId;
-	private int price;
-	private int availabilityStatus;
+	@Expose
+	private float price;
+	@Expose
+	private String availabilityStatus;
+	@Expose
 	private String mealType;
+	@Expose
 	private float score;
+	@Expose
 	private String name;
 	public int getMenuId() {
 		return menuId;
@@ -14,16 +22,16 @@ public class Menu {
 	public void setMenuId(int menuId) {
 		this.menuId = menuId;
 	}
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
-	public int getAvailabilityStatus() {
+	public String getAvailabilityStatus() {
 		return availabilityStatus;
 	}
-	public void setAvailabilityStatus(int availabilityStatus) {
+	public void setAvailabilityStatus(String availabilityStatus) {
 		this.availabilityStatus = availabilityStatus;
 	}
 	public String getMealType() {

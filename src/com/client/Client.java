@@ -7,20 +7,26 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.console.ConsoleService;
 import com.exception.InvalidArgumentException;
 import com.server.ServerConfiguration;
 import com.utility.ActionChoiceConstant;
+import com.utility.user.UserWrapper;
 
 public class Client{
 
 	public static void main(String... args) throws UnknownHostException, IOException {
 		final ClientInputHandler commandHelper = ClientInputHandler.getInstance();
-		final String emailId = ConsoleService.getUserInput("Enter the emailId:");
-		final String password = ConsoleService.getUserInput("Enter your password:");
-		final String inputsToAuthenticate[] = new String[]{ActionChoiceConstant.AUTHENTICATE_USER,emailId,password};
+		UserWrapper userWrapper = new UserWrapper();
+		userWrapper.setEmailId(ConsoleService.getUserInput("Enter the emailId:"));
+		userWrapper.setPassword(ConsoleService.getUserInput("Enter your password:"));
+		final Hashtable<String, Object> inputsToAuthenticate = new Hashtable<String, Object>();
+		inputsToAuthenticate.put(ActionChoiceConstant.AUTHENTICATE_USER, userWrapper);
+		
 		try {
 			commandHelper.processArguments(inputsToAuthenticate);
 			commandHelper.processOperation();

@@ -1,6 +1,9 @@
 package com.payload;
 
+import java.util.Hashtable;
+
 import com.google.gson.annotations.Expose;
+import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
@@ -12,8 +15,8 @@ public class UserPayloadHelper<T> implements Payload<T>{
 	private RequestWrapper requestWrapper;
 	@Expose
 	private ResponseWrapper responseWrapper;
-	private String userInput[];
-	public UserPayloadHelper(String[] userInput) {
+	private Hashtable<String, Object> userInput;
+	public UserPayloadHelper(Hashtable<String, Object> userInput) {
 		this.userInput = userInput;
 	}
 
@@ -66,10 +69,7 @@ public class UserPayloadHelper<T> implements Payload<T>{
 
 	private UserPayload getUserPayload() {
 		UserPayload userPayload = new UserPayload();
-		UserWrapper userWrapper = new UserWrapper();
-		userWrapper.setEmailId(userInput[1]);
-		userWrapper.setPassword(userInput[2]);
-		userPayload.setUserWrapperDetails(userWrapper);
+		userPayload.setUserWrapperDetails((UserWrapper)userInput.get(ActionChoiceConstant.AUTHENTICATE_USER));
 		return userPayload;
 	}
 	
