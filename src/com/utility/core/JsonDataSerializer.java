@@ -1,8 +1,6 @@
 package com.utility.core;
 
 import com.exception.DataSerializationException;
-import com.utility.core.CommunicationProtocol;
-import com.utility.core.DataSerializer;
 
 public class JsonDataSerializer implements DataSerializer{
 

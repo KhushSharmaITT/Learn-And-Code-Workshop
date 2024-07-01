@@ -27,7 +27,7 @@ public class ControllerFactory {
 			Class<?> dipatcherClass = Class.forName(className);
 			Constructor<?> constructor = dipatcherClass.getDeclaredConstructor();
 			constructor.setAccessible(true);
-			actionController = (Controller) constructor.newInstance();  
+			actionController = (Controller) constructor.newInstance();
         return actionController;
     }
 

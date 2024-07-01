@@ -8,10 +8,10 @@ import com.database.SQLDatabaseHelper;
 
 public interface Repository<T> {
 	public DatabaseHelper<Object> databaseHelper = new SQLDatabaseHelper<>();
-    public int save(T entity) throws SQLException;
+    public int save(List<T> entity) throws SQLException;
     public T find(String id) throws SQLException;
     public List<T> findAll() throws SQLException;
-    public int delete(T entity) throws SQLException;
-	public int update(T entity) throws SQLException;
-
+    public List<T> findRecords(String query) throws SQLException;
+    public int delete(List<T> entitiesToDelete) throws SQLException;
+	public int update(List<T> entitiesToUpdate) throws SQLException;
 }

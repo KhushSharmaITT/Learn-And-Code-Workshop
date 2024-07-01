@@ -14,23 +14,24 @@ import com.utility.core.ResponseWrapper;
 import com.utility.user.UserWrapper;
 
 public class AuthenticateUserAction implements Action{
-	
+
 	private JsonWrapper<RequestWrapper> jsonWrapper;
 	private UserService userService;
 	@Expose
 	public UserPayload userResponsePayload;
 	private UserPayloadHelper<UserPayload> userPayloadHelper;
-	
+
 	public AuthenticateUserAction() {
 		this.jsonWrapper = new JsonWrapper<>(RequestWrapper.class);
         this.jsonWrapper.setPrettyFormat(true);
         this.userService = new UserService();
         userResponsePayload = new UserPayload();
-        this.userPayloadHelper = new UserPayloadHelper<UserPayload>();
-	}
-    
+        this.userPayloadHelper = new UserPayloadHelper<>(); 
+	} 
+
+	@Override
 	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException {
-    	
+
     	System.out.println("yeahhhhhh finally");
     	final String dataToProcess = data.split("=")[0].trim();
     	RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
@@ -45,8 +46,8 @@ public class AuthenticateUserAction implements Action{
 
     private void prepareUserResponse(UserPayload userRequestPayload) throws SQLException, InvalidDataException, UserNotFoundException {
     	UserWrapper userToAuthenticate = userRequestPayload.getUserWrapperDetails();
-    	String userRole = userService.getUserRole(userToAuthenticate);
-    	userToAuthenticate.setRole(userRole);
-    	userResponsePayload.setUserWrapperDetails(userToAuthenticate);	
+    	userToAuthenticate = userService.getUserWithRole(userToAuthenticate);
+    	//userToAuthenticate.setRole(userRole);
+    	userResponsePayload.setUserWrapperDetails(userToAuthenticate);
     }
 }

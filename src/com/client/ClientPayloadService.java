@@ -36,7 +36,7 @@ public class ClientPayloadService {
 		System.out.println("------>"+"31");
 		return communicationProtocol;
 	}
-	
+
 	public CommunicationProtocol createResponseCommunicationProtocol(String data) {
 		System.out.println("------>"+"in createResponseCommunicationProtocol");
 		//System.out.println("client service"+data);

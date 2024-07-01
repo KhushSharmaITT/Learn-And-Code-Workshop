@@ -11,7 +11,7 @@ import com.utility.core.ResponseWrapper;
 import com.utility.user.UserWrapper;
 
 public class UserPayloadHelper<T> implements Payload<T>{
-	
+
 	private RequestWrapper requestWrapper;
 	@Expose
 	private ResponseWrapper responseWrapper;
@@ -41,7 +41,7 @@ public class UserPayloadHelper<T> implements Payload<T>{
 		System.out.println("32 transmission"+requestWrapper);
 		return (T) requestWrapper;
 	}
-	
+
 	@Override
 	public void setPayload(T Entity) {
 		UserPayload userResponsePayload = (UserPayload)Entity;
@@ -61,7 +61,7 @@ public class UserPayloadHelper<T> implements Payload<T>{
 		}
 		System.out.println("32 transmission "+responseWrapper.jsonString);
 		System.out.println("32 transmission "+responseWrapper.protocolFormat);
-		
+
 	}
 	public ResponseWrapper getResponseWrapper() {
 		return this.responseWrapper;
@@ -72,5 +72,5 @@ public class UserPayloadHelper<T> implements Payload<T>{
 		userPayload.setUserWrapperDetails((UserWrapper)userInput.get(ActionChoiceConstant.AUTHENTICATE_USER));
 		return userPayload;
 	}
-	
+
 }

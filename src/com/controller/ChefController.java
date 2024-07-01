@@ -2,6 +2,7 @@ package com.controller;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.client.ClientInputHandler;
 import com.console.ConsoleService;
@@ -31,7 +32,7 @@ public class ChefController implements Controller{
 		                 "4. View Voted Report\n"+
                          "5. Exit\n"+
 		                 "Enter your choice: \n";
-		
+
 		String choice="";
         boolean endProcess = false;
         do {
@@ -40,7 +41,7 @@ public class ChefController implements Controller{
             // Perform action based on user choice
             switch (choice) {
                 case "1":
-                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess = new Hashtable<>();
                 	inputsToProcess.put("Chef:view", "viewMenu");
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
@@ -51,24 +52,27 @@ public class ChefController implements Controller{
 //            	    clientInputHandler.processOperation();
                     break;
                 case "2":
-                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess = new Hashtable<>();
                 	inputsToProcess.put("Chef:view_recommendation", "viewRecommendation");
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                 	//userInputAction = new String[] {"View_Menu","Admin","Database"};
                     break;
                 case "3":
-                	item = menuService.updateItem();
-                	inputsToProcess = new Hashtable<String, Object>();
-                	inputsToProcess.put("Admin:update", item);
+                	//item = menuService.updateItem();
+                	String Ids	 = ConsoleService.getUserInput("Enter the MenuIds for the next day (comma separated): ");
+                	inputsToProcess = new Hashtable<>();
+        			String menuIds[] = Ids.split(",");
+        			List<Menu> itemsToRolledOut = menuService.getRolledOutItems(menuIds);
+                    inputsToProcess.put("Chef:roll_out_next_day_menu", itemsToRolledOut);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                     //userInputAction = new String[] {"Update_Menu","Admin","Database"};
                     break;
                 case "4":
-                	item = menuService.getDeleteItem();
-                	inputsToProcess = new Hashtable<String, Object>();
-                	inputsToProcess.put("Admin:delete", item);
+                	//item = menuService.getDeleteItem();
+                	inputsToProcess = new Hashtable<>();
+                	inputsToProcess.put("Chef:view_voted_report", "viewVotedReport");
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                 	//userInputAction = new String[] {"Delete_Item","Admin","Database"};
@@ -83,7 +87,7 @@ public class ChefController implements Controller{
 
             System.out.println(); // Print a newline for better readability
         } while (!endProcess);
-		
+
 	}
 
 }

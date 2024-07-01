@@ -12,7 +12,7 @@ import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 
 public class ManageMenuAction implements Action{
-	
+
 	private JsonWrapper<RequestWrapper> jsonWrapper;
 	private MenuService menuService;
 	public MenuPayload menuResponsePayload;
@@ -22,13 +22,13 @@ public class ManageMenuAction implements Action{
         this.jsonWrapper.setPrettyFormat(true);
         this.menuService = new MenuService();
         menuResponsePayload = new MenuPayload();
-        this.menuPayloadHelper = new MenuPayloadHelper<MenuPayload>();
+        this.menuPayloadHelper = new MenuPayloadHelper<>();
 	}
 
 	@Override
 	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException {
 		System.out.println("yeahhhhhh finally in manage menu");
-		
+
 		String actionToPerform = data.split("=")[1].trim();
 		final String dataToProcess = data.split("=")[0].trim();
 
@@ -41,8 +41,8 @@ public class ManageMenuAction implements Action{
 		}
 		else if(actionToPerform.equals(ActionChoiceConstant.ADMIN_VIEW)|| actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW)) {
 			System.out.println("In admin view");
-			String rowSaved = menuService.viewMenu();
-			return rowSaved +"="+ "Successfully retrieved the records.";
+			String rowsRetrieved = menuService.viewMenu();
+			return rowsRetrieved +"="+ "Successfully retrieved the records.";
 		}
 		else if(actionToPerform.equals(ActionChoiceConstant.ADMIN_UPDATE)) {
 			System.out.println("In admin update");
@@ -65,7 +65,7 @@ public class ManageMenuAction implements Action{
 
 	private void prepareMenuResponse(MenuPayload menuRequestPayload) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
