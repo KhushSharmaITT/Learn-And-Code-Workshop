@@ -9,12 +9,12 @@ public class RequestWrapper {
 	public String protocolFormat;
 	@Expose
 	public Exception exception;
-    
+
 //	public RequestWrapper(Hashtable<String, String> requestDetails) {
 //        this.requestDetails = requestDetails;
 //    }
 
-    public RequestWrapper() {
+    public RequestWrapper() { 
 		// TODO Auto-generated constructor stub
 	}
 

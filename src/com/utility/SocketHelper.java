@@ -16,8 +16,8 @@ public class SocketHelper {
         }
         return socketHelper;
     }
-    
-    private SocketHelper() { 
+
+    private SocketHelper() {
         // To allow singelton instance
     }
 

@@ -1,19 +1,11 @@
 package com.client;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.Scanner;
 
 import com.console.ConsoleService;
 import com.exception.InvalidArgumentException;
-import com.server.ServerConfiguration;
 import com.utility.ActionChoiceConstant;
 import com.utility.user.UserWrapper;
 
@@ -24,9 +16,9 @@ public class Client{
 		UserWrapper userWrapper = new UserWrapper();
 		userWrapper.setEmailId(ConsoleService.getUserInput("Enter the emailId:"));
 		userWrapper.setPassword(ConsoleService.getUserInput("Enter your password:"));
-		final Hashtable<String, Object> inputsToAuthenticate = new Hashtable<String, Object>();
+		final Hashtable<String, Object> inputsToAuthenticate = new Hashtable<>();
 		inputsToAuthenticate.put(ActionChoiceConstant.AUTHENTICATE_USER, userWrapper);
-		
+
 		try {
 			commandHelper.processArguments(inputsToAuthenticate);
 			commandHelper.processOperation();

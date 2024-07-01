@@ -1,6 +1,7 @@
 package com.payload;
 
 import java.util.Hashtable;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.model.Menu;
@@ -15,11 +16,11 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 	@Expose
 	private ResponseWrapper responseWrapper;
 	private Hashtable<String, Object> userInput;
-	
+
 	public MenuPayloadHelper(Hashtable<String, Object> userInput) {
 		this.userInput = userInput;
 	}
-	
+
 	public MenuPayloadHelper() {
 		// TODO Auto-generated constructor stub
 	}
@@ -49,29 +50,32 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	private MenuPayload getMenuPayload() {
 		System.out.println("In menu get menu payload");
 		MenuPayload menuPayload = null;
-		if(ActionChoiceConstant.ADMIN_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION == userInput.keySet().toArray()[0]) {
+		if(ActionChoiceConstant.ADMIN_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT == userInput.keySet().toArray()[0]) {
 			return null;
 		}
 		else if(ActionChoiceConstant.ADMIN_ADD == userInput.keySet().toArray()[0]) {
 			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((Menu)userInput.get(ActionChoiceConstant.ADMIN_ADD));
+			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_ADD));
 			return menuPayload;
 		}
 		else if(ActionChoiceConstant.ADMIN_UPDATE == userInput.keySet().toArray()[0]) {
 			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((Menu)userInput.get(ActionChoiceConstant.ADMIN_UPDATE));
+			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_UPDATE));
 			return menuPayload;
 		}
-		else{
+		else if(ActionChoiceConstant.ADMIN_DELETE == userInput.keySet().toArray()[0]){
 			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((Menu)userInput.get(ActionChoiceConstant.ADMIN_DELETE));
+			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_DELETE));
 			return menuPayload;
 		}
-		
+		else
+			menuPayload = new MenuPayload();
+		    menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU));
+		    return menuPayload;
 		//return menuPayload;
 	}
 

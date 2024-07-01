@@ -9,9 +9,9 @@ public class ResponseWrapper {
 	public String protocolFormat;
 	@Expose
 	public Exception exception;
-	
+
 	public ResponseWrapper() {
-		
+
 	}
-	
+
 }

@@ -10,10 +10,10 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
     	ExecutorService executor = Executors.newFixedThreadPool(ServerConfiguration.TOTAL_CONNECTIONS);
-    	
+
         try(final ServerSocket listenerSocket = new ServerSocket(ServerConfiguration.PORT)){
             System.out.println("[SERVER] waiting for client on port" + ServerConfiguration.PORT);
-            
+
             while(true) {
             	Socket clientSocket = listenerSocket.accept();
             	executor.submit(new ClientThread(clientSocket));

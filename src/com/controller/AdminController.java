@@ -1,7 +1,9 @@
 package com.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.client.ClientInputHandler;
 import com.console.ConsoleService;
@@ -10,21 +12,21 @@ import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
 import com.model.Menu;
 import com.service.MenuService;
-import com.utility.ActionChoiceConstant;
 
 public class AdminController implements Controller{
 
 	@Override
 	public void handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException {
-		
+
 		getAdminAction();
-	    
+
 	}
 
 	private void getAdminAction() throws InvalidArgumentException {
 		final MenuService menuService = new MenuService();
 		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
 		Hashtable<String, Object> inputsToProcess;
+		List<Menu> menuItems;
 		String actions = "Please choose an option\n"+
 	                      "1. Add Item\n"+
 				          "2. View Menu\n"+
@@ -32,7 +34,7 @@ public class AdminController implements Controller{
 				          "4. Delete Item\n"+
 	                      "5. Exit\n"+
 				          "Enter your choice: \n";
-		
+
         String choice="";
         boolean endProcess = false;
         do {
@@ -41,31 +43,37 @@ public class AdminController implements Controller{
             // Perform action based on user choice
             switch (choice) {
                 case "1":
+                	menuItems = new ArrayList<>();
                 	item = menuService.addItem();
-                    inputsToProcess = new Hashtable<String, Object>();
-                	inputsToProcess.put("Admin:add", item);
+                	menuItems.add(item);
+                    inputsToProcess = new Hashtable<>();
+                	inputsToProcess.put("Admin:add", menuItems);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                     break;
                 case "2":
-                	inputsToProcess = new Hashtable<String, Object>();
+                	inputsToProcess = new Hashtable<>();
                 	inputsToProcess.put("Admin:view", "viewMenu");
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                 	//userInputAction = new String[] {"View_Menu","Admin","Database"};
                     break;
                 case "3":
-                	item = menuService.updateItem();
-                	inputsToProcess = new Hashtable<String, Object>();
-                	inputsToProcess.put("Admin:update", item);
+                	menuItems = new ArrayList<>();
+                    item = menuService.updateItem();
+                    menuItems.add(item);
+                	inputsToProcess = new Hashtable<>();
+                	inputsToProcess.put("Admin:update", menuItems);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                     //userInputAction = new String[] {"Update_Menu","Admin","Database"};
                     break;
                 case "4":
+                	menuItems = new ArrayList<>();
                 	item = menuService.getDeleteItem();
-                	inputsToProcess = new Hashtable<String, Object>();
-                	inputsToProcess.put("Admin:delete", item);
+                	menuItems.add(item);
+                	inputsToProcess = new Hashtable<>();
+                	inputsToProcess.put("Admin:delete", menuItems);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                 	//userInputAction = new String[] {"Delete_Item","Admin","Database"};
@@ -81,7 +89,7 @@ public class AdminController implements Controller{
             System.out.println(); // Print a newline for better readability
         } while (!endProcess);
         //return inputsToProcess;
-		
+
 	}
 
 }

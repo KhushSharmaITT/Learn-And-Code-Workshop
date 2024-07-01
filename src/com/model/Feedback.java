@@ -1,12 +1,24 @@
 package com.model;
 
+import java.sql.Timestamp;
+
+import com.google.gson.annotations.Expose;
+
 public class Feedback {
-	private String employeeId;
+	@Expose
+	private int id;
+	@Expose
+	private int userId;
+	@Expose
     private int menuId;
+	@Expose
     private String comment;
-    private int rating;
+	@Expose
+    private float rating;
+	@Expose
     private String sentiments;
-    //private Timestamp createdDate;
+	@Expose
+    private Timestamp createdDate;
 
     public void setMenuId(int menuId) {
         this.menuId = menuId;
@@ -16,15 +28,15 @@ public class Feedback {
         this.comment = comment;
     }
 
-//    public void setCreatedDate(Timestamp createdDate) {
-//        this.createdDate = createdDate;
-//    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public void setRating(int rating) {
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
@@ -36,7 +48,7 @@ public class Feedback {
         return this.menuId;
     }
 
-    public int getRating() {
+    public float getRating() {
         return this.rating;
     }
 
@@ -44,15 +56,23 @@ public class Feedback {
         return this.comment;
     }
 
-    public String getEmployeeId() { //this is user id
-        return this.employeeId;
+    public int getUserId() { //this is user id
+        return this.userId;
     }
 
     public String getSentiments() {
         return this.sentiments;
     }
 
-//    public Timestamp getCreatedDate() {
-//        return createdDate;
-//    }
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
 }

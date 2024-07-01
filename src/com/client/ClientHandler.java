@@ -19,15 +19,17 @@ import com.exception.InvalidOperationException;
 import com.exception.UserNotFoundException;
 import com.factory.ControllerFactory;
 import com.factory.DataSerializerFactory;
+import com.payload.ChefRecommendPayloadHelper;
+import com.payload.FeedbackPayloadHelper;
+import com.payload.MenuPayloadHelper;
+import com.payload.UserPayloadHelper;
+import com.payload.VotedItemPayloadHelper;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
+import com.utility.SocketHelper;
 import com.utility.core.CommunicationProtocol;
 import com.utility.core.DataSerializer;
 import com.utility.core.RequestWrapper;
-import com.utility.SocketHelper;
-import com.payload.MenuPayloadHelper;
-import com.payload.UserPayload;
-import com.payload.UserPayloadHelper;
 
 public class ClientHandler {
 	private Socket client;
@@ -42,7 +44,7 @@ public class ClientHandler {
         }
         return handler;
     }
-    
+
     private ClientHandler() throws UnknownHostException, IOException {
         this.inputHandler = ClientInputHandler.getInstance();
         client = new Socket("localhost", 9999);
@@ -63,26 +65,36 @@ public class ClientHandler {
     	String actionName = inputHandler.getActionName();
     	CommunicationProtocol protocol = null;
     	if(actionName == ActionChoiceConstant.AUTHENTICATE_USER) {  //create a factory pattern for this also to reduce the code.(for payload)
-    		final UserPayloadHelper<RequestWrapper> userPayload = new UserPayloadHelper<RequestWrapper>(userInputs);// refactor this code after the implementation send only the object
+    		final UserPayloadHelper<RequestWrapper> userPayload = new UserPayloadHelper<>(userInputs);// refactor this code after the implementation send only the object from userinput and one thing in factory pattern pass action constant in constructor in getInstance()
             final RequestWrapper requestWrapper = userPayload.getPayload();
             protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
-    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)) {
-    		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<RequestWrapper>(userInputs);
-    		final RequestWrapper requestWrapper = menuPayload.getPayload();
+    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)|| actionName.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU) || actionName.equals(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT)) {
+    		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = menuPayload.getPayload(); 
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper); 
+    	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION)) {
+    		final ChefRecommendPayloadHelper<RequestWrapper> chefRecommendPayload = new ChefRecommendPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = chefRecommendPayload.getPayload();
     		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
-//    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.ADMIN_VIEW)) {
-//    		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<RequestWrapper>();
-//    		final RequestWrapper requestWrapper = menuPayload.getPayload();
-//    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
-//    	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS)) {
+    		final VotedItemPayloadHelper<RequestWrapper> votedItemPayload = new VotedItemPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = votedItemPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_FEEDBACK)) {
+    		final FeedbackPayloadHelper<RequestWrapper> feedbackPayload = new FeedbackPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = feedbackPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    	}
 //    	else if(userInputs[1] == ActionChoiceConstant.ADMIN) {
 //    		final UserPayloadHelper userPayload = new UserPayloadHelper(userInputs);
 //            final RequestWrapper requestWrapper = userPayload.getPayload();
 //            protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
 //    	}
-        
+
         //System.out.println(protocol.toString());
         System.out.println(protocol.getHeaders());
         System.out.println("56");
@@ -97,12 +109,12 @@ public class ClientHandler {
     }
 
     private Hashtable<String, String> prepareRequestDetails() {
-        final Hashtable<String, String> requestDetails = new Hashtable<String,String>();   
+        final Hashtable<String, String> requestDetails = new Hashtable<>();
         requestDetails.put(ProtocolConstant.ACTION_NAME, inputHandler.getActionName());
         requestDetails.put(ProtocolConstant.PROTOCOL_FORMAT, ProtocolConstant.JSON);
         return requestDetails;
     }
-    
+
     private void readServerResponse() throws IOException, ParseException, DataSerializationException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException, SQLException, UserNotFoundException {
         final BufferedReader clientInput = socketHelper.getReader(client);
         final String protocolFormat = clientInput.readLine().split("=")[1].trim();
@@ -115,7 +127,7 @@ public class ClientHandler {
         final CommunicationProtocol requestProtocol = serializer.deserialize(protocolBody.toString());
         processServerResponse(requestProtocol);
     }
-    
+
      private void processServerResponse(CommunicationProtocol responseProtocol) throws InvalidOperationException, SQLException, UserNotFoundException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataSerializationException {
         if(responseProtocol.getStatusCode() == ProtocolConstant.SUCCESS_CODE) {
             final String actionName = responseProtocol.getHeaders().get("actionName");

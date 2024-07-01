@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 
 public class CommunicationProtocol {
 	 public int size;
-	    @Expose 
+	    @Expose
 		private String data;
 		private String protocolVersion;
 		@Expose

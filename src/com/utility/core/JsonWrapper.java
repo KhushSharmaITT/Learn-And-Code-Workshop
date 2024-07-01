@@ -1,7 +1,5 @@
 package com.utility.core;
 
-import java.time.LocalDate;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,12 +16,12 @@ public class JsonWrapper<T> {
         gson = new Gson();
         parser = new JSONParser();
     }
-    
+
     public JsonWrapper(Class<T> classType) {
         this();
         this.classType = classType;
     }
-    
+
     public JSONObject getJsonObject(T entity) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -59,6 +57,6 @@ public class JsonWrapper<T> {
         if(prettyFormat) {
             this.gson = builder.create();
         }
-    }
+    } 
 
 }

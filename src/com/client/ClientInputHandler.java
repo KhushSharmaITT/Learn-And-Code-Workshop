@@ -8,9 +8,6 @@ import org.json.simple.parser.ParseException;
 
 import com.exception.DataSerializationException;
 import com.exception.InvalidArgumentException;
-import com.model.Menu;
-import com.utility.ActionChoiceConstant;
-import com.utility.user.UserWrapper;
 
 public class ClientInputHandler {
 
@@ -47,7 +44,7 @@ public class ClientInputHandler {
 //            }
 //        }
     }
-    
+
     public void processOperation() {
         try {
             final ClientHandler clientHandler = ClientHandler.getInstance();
@@ -60,9 +57,9 @@ public class ClientInputHandler {
             System.out.println("Failed to start client : "+issue.getLocalizedMessage());
         }
     }
-    
+
     public Hashtable<String,Object> getInputArguments() {
-    	
+
         return userInput;
     }
 

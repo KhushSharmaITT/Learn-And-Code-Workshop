@@ -1,6 +1,5 @@
 package com.console;
 
-import java.util.Iterator;
 import java.util.Scanner;
 
 public class ConsoleService {

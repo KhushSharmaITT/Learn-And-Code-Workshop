@@ -14,7 +14,7 @@ public class DataSerializerFactory {
 
     static {
         dataSerializerRegistry.put("json", "com.utility.core.JsonDataSerializer");
-        
+
     }
 	public static DataSerializer getInstance(String protocolFormat) throws DataSerializationException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		DataSerializer serializer = null;
@@ -25,7 +25,7 @@ public class DataSerializerFactory {
 			Class<?> dipatcherClass = Class.forName(className);
 			Constructor<?> constructor = dipatcherClass.getDeclaredConstructor();
 			constructor.setAccessible(true);
-			serializer = (DataSerializer) constructor.newInstance();  
+			serializer = (DataSerializer) constructor.newInstance();
         return serializer;
     }
 
