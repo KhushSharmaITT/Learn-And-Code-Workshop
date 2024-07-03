@@ -56,7 +56,7 @@ public class ClientInputHandler {
         }catch (Exception issue) {
             System.out.println("Failed to start client : "+issue.getLocalizedMessage());
         }
-    }
+    } 
 
     public Hashtable<String,Object> getInputArguments() {
 

@@ -65,7 +65,7 @@ public class ClientThread implements Runnable{
         	//if((inputLine = clientInput.readLine())!= null) {
         		protocolBody.append(clientInput.readLine());
         	//}
-        } 
+        }
         System.out.println("protocol body--->"+ protocolBody);
         System.out.println(" 66 In read client request");
         final DataSerializer serializer = DataSerializerFactory.getInstance(protocolFormat);

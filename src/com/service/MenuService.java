@@ -105,27 +105,29 @@ public class MenuService {
 		return String.valueOf(rowDeleted);
 	}
 
-	public Hashtable<Integer, Float> prepareRecommendations() throws SQLException {
+	public Hashtable<Integer, Double> prepareRecommendations() throws SQLException {
+		double alpha = 0.5; 
+        double beta = 0.5;
 		final FeedbackRepository<Feedback> feedbackRepository = new FeedbackRepository<>();
-		final FeedbackService feedbackService = new FeedbackService();
-		List<Feedback> feedbackList = feedbackRepository.findAll();
-		Hashtable<Integer, Float> scoreMap = new Hashtable<>();
+		//final FeedbackService feedbackService = new FeedbackService();
+		List<Feedback> feedbackList = feedbackRepository.findAll(); // only query those feedbacks which is not processed.
+		Hashtable<Integer, Double> scoreMap = new Hashtable<>();
         for (Feedback feedback : feedbackList) {
             int menuId = feedback.getMenuId();
             float rating = feedback.getRating();
-            String sentiment = feedback.getSentiments();
-
-            float sentimentScore = feedbackService.analyzeSentiment(sentiment);
-            float finalScore = rating + sentimentScore;
-
-            scoreMap.put(menuId, scoreMap.getOrDefault(menuId, 0.0f) + finalScore);
+            double sentimentScore = feedback.getSentimentScore();
+            
+            //float sentimentScore = feedbackService.analyzeSentiment(sentiment);
+            double combinedScore = alpha * sentimentScore + beta * rating;
+            double finalScore = Math.max(1, Math.min(5, combinedScore));
+            scoreMap.put(menuId, scoreMap.getOrDefault(menuId, 0.0) + finalScore);
         }
 		return scoreMap;
 	}
 
-	public List<Menu> prepareMenuItemforUpdatedScore(Hashtable<Integer, Float> menuIdWithScoreMap) {
+	public List<Menu> prepareMenuItemforUpdatedScore(Hashtable<Integer, Double> menuIdWithScoreMap) {
 		List<Menu> updatedItems = new ArrayList<>();
-		for (Entry<Integer, Float> entry : menuIdWithScoreMap.entrySet()) {
+		for (Entry<Integer, Double> entry : menuIdWithScoreMap.entrySet()) {
             Menu updatedItemScore = new Menu();
             updatedItemScore.setMenuId(entry.getKey());
             updatedItemScore.setScore(entry.getValue());
@@ -142,9 +144,16 @@ public class MenuService {
 
 	public String viewTopFoodRecommendation() throws SQLException {
 		System.out.println("In view recommended menu");
+		final String mealTypes[] = {"Breakfast", "Lunch", "Dinner"};
 		List<Menu> menuList = new ArrayList<>();
-		String queryToFind = "SELECT * FROM Menu WHERE AvailabilityStatus = 'Yes' ORDER BY Score DESC LIMIT 3";
-		menuList = repository.findRecords(queryToFind);
+		for (String mealType : mealTypes) {
+			String queryToFind = "SELECT * FROM Menu WHERE AvailabilityStatus = 'Yes' AND MealType = '"+mealType+"' ORDER BY Score DESC LIMIT 3";
+			List<Menu> mealSpecificMenu = repository.findRecords(queryToFind);
+			menuList.addAll(mealSpecificMenu);
+		}
+		//implement a logic that a menu is not recommended repeatedly. search the above menu id in the chef recommendation whether it is recommended yesterday a day before yesterday and a day before also.
+		//String queryToFind = "SELECT * FROM Menu WHERE AvailabilityStatus = 'Yes' ORDER BY Score DESC LIMIT 3";
+		//menuList = repository.findRecords(queryToFind);
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
 		result.append("--------------------------------------------------------------------------------------\n");
@@ -172,6 +181,13 @@ public class MenuService {
 		}
 		// TODO Auto-generated method stub
 		return itemsToRolledOut;
+	}
+
+	public Menu getDiscardItem() {
+		Menu menuItem = new Menu();
+		menuItem.setMenuId(Integer.parseInt(ConsoleService.getUserInput("Enter Menu Id :")));
+		menuItem.setName(ConsoleService.getUserInput("Enter Name :"));
+		return menuItem;
 	}
 
 }

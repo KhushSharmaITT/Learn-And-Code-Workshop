@@ -11,6 +11,7 @@ import com.payload.FeedbackPayload;
 import com.payload.VotedItemPayload;
 import com.service.ChefRecommendationService;
 import com.service.FeedbackService;
+import com.service.NotificationService;
 import com.service.VotedItemService;
 import com.utility.ActionChoiceConstant;
 import com.utility.core.JsonWrapper;
@@ -55,6 +56,12 @@ public class ManageEmployeeAction implements Action{
 			List<Feedback> processedFeedbacks = feedbackService.processFeedbacksForSentiments(feedbackPayload.getFeedbackWrapperDetails());
 			String rowSaved = feedbackService.saveFeedbacks(processedFeedbacks);
 			return rowSaved+" "+"Record successfuly saved." +"="+ "Record successfuly saved.";
+		}
+		else if(actionToPerform.equals(ActionChoiceConstant.EMPLOYEE_VIEW_NOTIFICATION)) {
+			System.out.println("In notification view");
+			NotificationService notificationService = new NotificationService();
+			String rowsRetrieved = notificationService.viewNotifications();
+			return rowsRetrieved +"="+ "Successfully retrieved the records.";
 		}
 		return null;
 	}

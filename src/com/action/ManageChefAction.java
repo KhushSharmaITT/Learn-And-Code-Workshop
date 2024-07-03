@@ -10,16 +10,17 @@ import com.model.ChefRecommendation;
 import com.model.Menu;
 import com.payload.MenuPayload;
 import com.service.ChefRecommendationService;
+import com.service.FeedbackService;
 import com.service.MenuService;
 import com.utility.ActionChoiceConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 
-public class MenuRecommendationAction implements Action{
+public class ManageChefAction implements Action{
 
 	private JsonWrapper<RequestWrapper> jsonWrapper;
 	MenuService menuService;
-	public MenuRecommendationAction() {
+	public ManageChefAction() {
 		this.jsonWrapper = new JsonWrapper<>(RequestWrapper.class);
         this.jsonWrapper.setPrettyFormat(true);
 		menuService = new MenuService();
@@ -29,7 +30,7 @@ public class MenuRecommendationAction implements Action{
 		System.out.println("yeahhhhhh finally in menu recommendation");
 		String actionToPerform = data.split("=")[1].trim();
 		if(actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)) {
-			final Hashtable<Integer, Float> menuIdWithScoreMap;
+			final Hashtable<Integer, Double> menuIdWithScoreMap;
 			menuIdWithScoreMap = menuService.prepareRecommendations();
 			List<Menu> updatedItemsScore = menuService.prepareMenuItemforUpdatedScore(menuIdWithScoreMap);
 			String rowsUpdated = menuService.updateMenuItems(updatedItemsScore);
@@ -52,6 +53,19 @@ public class MenuRecommendationAction implements Action{
 			String rowsRetrieved = chefRecommendationService.viewVotedMenu();
 			return rowsRetrieved +"="+ "Successfully retrieved the records.";
         }
+		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST)) {
+			//ChefRecommendationService chefRecommendationService = new ChefRecommendationService();
+			FeedbackService feedbackService = new FeedbackService();
+			String rowsRetrieved = feedbackService.viewDiscardedItem();
+			return rowsRetrieved +"="+ "Successfully retrieved the records.";
+        }
+		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)) {
+			final String dataToProcess = data.split("=")[0].trim();
+			RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
+		    MenuPayload menuRequestPayload = menuService.prepareMenuPayload(requestWrapper);
+		    String rowDeleted = menuService.deleteMenu(menuRequestPayload.getMenuWrapperDetails());
+		    return rowDeleted +"="+ "Record Deleted Successfully.";
+		}
 		
 		return null;
 	}

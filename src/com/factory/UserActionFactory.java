@@ -19,13 +19,15 @@ public class UserActionFactory {
 		actionRegistry.put(ActionChoiceConstant.ADMIN_UPDATE,"com.action.ManageMenuAction");
 		actionRegistry.put(ActionChoiceConstant.ADMIN_DELETE,"com.action.ManageMenuAction");
 		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW,"com.action.ManageMenuAction");
-		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION,"com.action.MenuRecommendationAction");
-		actionRegistry.put(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,"com.action.MenuRecommendationAction");
-		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT,"com.action.MenuRecommendationAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION,"com.action.ManageChefAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,"com.action.ManageChefAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT,"com.action.ManageChefAction");
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION,"com.action.ManageEmployeeAction");
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS,"com.action.ManageEmployeeAction"); 
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_FEEDBACK,"com.action.ManageEmployeeAction");
-}
+		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_VIEW_NOTIFICATION,"com.action.ManageEmployeeAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_DISCARD_ITEM,"com.action.ManageChefAction");
+	}
 	// argument name should be changed.
 	public static Action getInstance(String protocolFormat) throws  ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {
 		Action action = null;

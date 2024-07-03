@@ -79,10 +79,10 @@ public class ChefRecommendationRepository<T> implements Repository<T> {
 		 while (cursor.next()) {
              ChefRecommendation votedMenu = new ChefRecommendation();
              votedMenu.setMenuId(cursor.getInt("MenuId"));
-             votedMenu.setId(cursor.getInt("Id"));
-             votedMenu.setVoteCount(cursor.getInt("VoteCount"));
-             if(cursor.getString("MenuItem") != null)votedMenu.setMenuName(cursor.getString("MenuItem"));
-             if(cursor.getString("Score") != null)votedMenu.setScore(cursor.getFloat("Score"));
+             //votedMenu.setId(cursor.getInt("Id"));
+             if(cursor.getInt("VoteCount") > 0)votedMenu.setVoteCount(cursor.getInt("VoteCount"));
+             votedMenu.setMenuName(cursor.getString("MenuItem"));
+             votedMenu.setScore(cursor.getFloat("Score"));
              votedMenus.add((T)votedMenu);
          }
 		return votedMenus;

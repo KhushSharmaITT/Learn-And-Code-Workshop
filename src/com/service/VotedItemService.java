@@ -1,6 +1,7 @@
 package com.service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.console.ConsoleService;
@@ -23,6 +24,7 @@ public class VotedItemService {
 	public VotedItem getItemToVote() {
 		VotedItem votedItem = new VotedItem();
 		votedItem.setMenuId(Integer.parseInt(ConsoleService.getUserInput("Enter Menu Id to vote for from recommended menu :")));
+		votedItem.setMealType(ConsoleService.getUserInput("Enter meal type(Breakfast/Lunch/Dinner): "));
 		return votedItem;
 	}
 
@@ -33,16 +35,23 @@ public class VotedItemService {
 	public String saveVotedItem(List<VotedItem> votedItems) throws SQLException, DuplicateDataException {
 		// TODO Auto-generated method stub
 		int rowSaved;
-		List<VotedItem> duplicateResponses;
+		List<VotedItem> duplicateResponses = new ArrayList<>();
 		for(VotedItem votedItem : votedItems) {
-			String queryToFind = "SELECT * FROM VotedItem where UserId ="+votedItem.getUserId()+" AND MenuId ="+votedItem.getMenuId()+" AND DATE(Date_Created) = CURDATE()";
-			duplicateResponses = repository.findRecords(queryToFind);
+			if(votedItem.getMenuId()>0) {
+			String queryToFind = "SELECT vi.UserId, vi.MenuId, m.MealType "
+					             + "FROM "
+					             + "VotedItem vi INNER JOIN Menu m "
+					             + "ON vi.MenuId = m.MenuId WHERE vi.UserId ="+votedItem.getUserId()
+					             + " AND m.MealType = '"+votedItem.getMealType()
+					             + "' AND DATE(Date_Created) = CURDATE()";
+			duplicateResponses =repository.findRecords(queryToFind);
+			}
 			if(!duplicateResponses.isEmpty()) {
-				throw new DuplicateDataException("You already voted for this item today, Thank You ");
+				throw new DuplicateDataException("Your vote for particular meal type is already recorded.");
 			}
 		}
-		rowSaved = repository.save(votedItems);
-		return String.valueOf(rowSaved);
+			rowSaved = repository.save(votedItems);
+			return String.valueOf(rowSaved);
+		}
+		
 	}
-
-}

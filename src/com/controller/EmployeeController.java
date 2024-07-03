@@ -1,7 +1,7 @@
 package com.controller;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.Hashtable;
 import java.util.List;
 
@@ -51,10 +51,11 @@ public class EmployeeController implements Controller{
 	    FeedbackService feedbackService;
 		Hashtable<String, Object> inputsToProcess;
 		String actions = "Please choose an option\n"+
-		                 "1. View Chef's Recommendation\n"+
-                         "2. Vote for Next Day Recommendation\n"+
-		                 "3. Give Feedback to Chef\n"+
-                         "4. Exit\n"+
+		                 "1. View Notification\n"+
+		                 "2. View Chef's Recommendation\n"+
+                         "3. Vote for Next Day Recommendation\n"+
+		                 "4. Give Feedback to Chef\n"+
+                         "5. Exit\n"+
 		                 "Enter your choice: \n";
 
 		String choice = "";
@@ -62,13 +63,19 @@ public class EmployeeController implements Controller{
 		do {
 			choice = ConsoleService.getUserInput(actions);
 		switch (choice) {
-        case "1":
+		case "1":
+			inputsToProcess = new Hashtable<>();
+			inputsToProcess.put("Employee:view_notification", "viewNotification");
+			clientInputHandler.processArguments(inputsToProcess);
+        	clientInputHandler.processOperation();
+        	break;
+        case "2":
         	inputsToProcess = new Hashtable<>();
         	inputsToProcess.put("Employee:view_chefRecommendations", "viewChefRecommendations");
         	clientInputHandler.processArguments(inputsToProcess);
         	clientInputHandler.processOperation();
         	break;
-        case "2":
+        case "3":
         	inputsToProcess = new Hashtable<>();
         	List<VotedItem> votedItems = new ArrayList<>();
         	VotedItem itemToVote = votedItemService.getItemToVote();
@@ -80,7 +87,7 @@ public class EmployeeController implements Controller{
         	clientInputHandler.processArguments(inputsToProcess);
     	    clientInputHandler.processOperation();
         	break;
-        case "3":
+        case "4":
         	inputsToProcess = new Hashtable<>();
         	List<Feedback> userFeedbacks = new ArrayList<>();
         	feedbackService = new FeedbackService();
@@ -93,7 +100,7 @@ public class EmployeeController implements Controller{
     	    clientInputHandler.processOperation();
         	
             break;
-        case "4":
+        case "5":
         	endProcess = true;
             System.out.println("Exiting the program...");
             break;

@@ -22,6 +22,7 @@ import com.factory.DataSerializerFactory;
 import com.payload.ChefRecommendPayloadHelper;
 import com.payload.FeedbackPayloadHelper;
 import com.payload.MenuPayloadHelper;
+import com.payload.NotificationPayloadHelper;
 import com.payload.UserPayloadHelper;
 import com.payload.VotedItemPayloadHelper;
 import com.utility.ActionChoiceConstant;
@@ -37,7 +38,7 @@ public class ClientHandler {
     private SocketHelper socketHelper;
     private ClientInputHandler inputHandler;
     private Hashtable<String, Object> userInputs;
-
+    private String dataFromServer;
     public static ClientHandler getInstance() throws UnknownHostException, IOException {
         if(handler == null) {
             handler = new ClientHandler();
@@ -69,7 +70,7 @@ public class ClientHandler {
             final RequestWrapper requestWrapper = userPayload.getPayload();
             protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
-    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)|| actionName.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU) || actionName.equals(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT)) {
+    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)|| actionName.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU) || actionName.equals(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT) || actionName.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)) {
     		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<>(userInputs);
     		final RequestWrapper requestWrapper = menuPayload.getPayload(); 
     		protocol = clientService.createRequestCommunicationProtocol(requestWrapper); 
@@ -87,6 +88,12 @@ public class ClientHandler {
     	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_FEEDBACK)) {
     		final FeedbackPayloadHelper<RequestWrapper> feedbackPayload = new FeedbackPayloadHelper<>(userInputs);
     		final RequestWrapper requestWrapper = feedbackPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    		
+    	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_VIEW_NOTIFICATION)) {
+    		final NotificationPayloadHelper<RequestWrapper> notificationPayload = new NotificationPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = notificationPayload.getPayload();
     		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
 //    	else if(userInputs[1] == ActionChoiceConstant.ADMIN) {
@@ -128,7 +135,7 @@ public class ClientHandler {
         processServerResponse(requestProtocol);
     }
 
-     private void processServerResponse(CommunicationProtocol responseProtocol) throws InvalidOperationException, SQLException, UserNotFoundException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataSerializationException {
+     private void processServerResponse(CommunicationProtocol responseProtocol) throws InvalidOperationException, SQLException, UserNotFoundException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataSerializationException, UnknownHostException, IOException {
         if(responseProtocol.getStatusCode() == ProtocolConstant.SUCCESS_CODE) {
             final String actionName = responseProtocol.getHeaders().get("actionName");
             final String data = responseProtocol.getData();
@@ -143,6 +150,8 @@ public class ClientHandler {
             }
             else {
             	System.out.println(data);
+            	this.dataFromServer = data;
+            	
             }
         } else if(responseProtocol.getStatusCode() == ProtocolConstant.ERROR_CODE) {
             System.out.println("Server Response : "+responseProtocol.getErrorMessage() +", Response Code = "+responseProtocol.getStatusCode());
@@ -160,4 +169,8 @@ public class ClientHandler {
 //        }
         return inputHandler.getInputArguments();
     }
+
+	public String getDataFromServer() {
+		return dataFromServer;
+	}
 }
