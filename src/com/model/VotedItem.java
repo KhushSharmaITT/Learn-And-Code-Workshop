@@ -15,6 +15,8 @@ public class VotedItem {
 	@Expose
 	private int vote;
 	@Expose
+	private String mealType;
+	@Expose
 	private Timestamp createdDate;
 	
 	public int getId() {
@@ -46,5 +48,11 @@ public class VotedItem {
 	}
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
+	}
+	public String getMealType() {
+		return mealType;
+	}
+	public void setMealType(String mealType) {
+		this.mealType = mealType;
 	} 
 }

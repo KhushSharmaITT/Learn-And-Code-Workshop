@@ -1,6 +1,7 @@
 package com.service;
 
 import com.payload.FeedbackPayload;
+import com.repository.DiscardItemRepository;
 import com.repository.FeedbackRepository;
 
 import java.sql.SQLException;
@@ -11,13 +12,16 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.console.ConsoleService;
+import com.exception.DuplicateDataException;
+import com.model.DiscardItem;
 import com.model.Feedback;
+import com.model.VotedItem;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 
 public class FeedbackService {
 	private JsonWrapper<FeedbackPayload> jsonWrapper;
-	private FeedbackRepository repository;
+	private FeedbackRepository<Feedback> repository;
 	private final HashSet<String> goodWords = new HashSet<>(Arrays.asList(
             "delicious", "tasty", "delectable", "savory", "scrumptious", 
             "mouth-watering", "healthy", "fresh", "organic", "homemade", 
@@ -38,7 +42,7 @@ public class FeedbackService {
             "greasy", "artificial", "contaminated", "dry", "hard", 
             "stiff", "bland", "chewy", "flavorless", "underdone", 
             "fishy", "rancid", "gamey", "lukewarm", "cloying", 
-            "over-seasoned", "watery", "mealy", "starchy", "limp"
+            "over-seasoned", "watery", "mealy", "starchy", "limp","bad"
         ));
 	private final HashSet<String> neutralWords = new HashSet<>(Arrays.asList(
             "baked", "boiled", "steamed", "grilled", "sautéed", 
@@ -68,22 +72,22 @@ public class FeedbackService {
 	public FeedbackService() {
 		jsonWrapper = new JsonWrapper<>(FeedbackPayload.class);
         jsonWrapper.setPrettyFormat(true);
-        repository = new FeedbackRepository();
+        repository = new FeedbackRepository<>();
 	}
 
-	public float analyzeSentiment(String sentiment) {
-
-        switch (sentiment.toLowerCase()) {
-            case "positive":
-                return 1.0f;
-            case "neutral":
-                return 0.5f;
-            case "negative":
-                return -1.0f;
-            default:
-                return 0.0f;
-        }
-	}
+//	public float analyzeSentiment(String sentiment) {
+//
+//        switch (sentiment.toLowerCase()) {
+//            case "positive":
+//                return 1.0f;
+//            case "neutral":
+//                return 0.5f;
+//            case "negative":
+//                return -1.0f;
+//            default:
+//                return 0.0f;
+//        }
+//	}
 
 	public Feedback getUserFeedback() {
 		Feedback userFeedback = new Feedback();
@@ -101,21 +105,22 @@ public class FeedbackService {
 	public List<Feedback> processFeedbacksForSentiments(List<Feedback> feedbackWrapperDetails) {
 		List<Feedback> processedFeedbacks = new ArrayList<>();
 		for(Feedback feedback : feedbackWrapperDetails) {
-			String analysedSentiment = processSentimentsFromComments(feedback.getComment());
-			feedback.setSentiments(analysedSentiment);
+			double sentimentScore = processSentimentsFromComments(feedback.getComment());
+			feedback.setSentimentScore(sentimentScore);
+			feedback.setSentiments(analyzeSentiment(sentimentScore));
 			processedFeedbacks.add(feedback);
 		}
 		return processedFeedbacks;
 	}
 
-	private String processSentimentsFromComments(String comment) {
+	private double processSentimentsFromComments(String comment) {
 		String commentToProcess[] = comment.split("\\s+");
 		Hashtable<String,Integer> wordsWithScore = new Hashtable<>();
 		int positiveCount = 0, negativeCount = 0, neutralCount = 0;
-		String finalSentiment;
+		//String finalSentiment;
 		int positiveWeight = 3;
-        int negativeWeight = -2;
-        int neutralWeight = -1;
+        int negativeWeight = -1;
+        int neutralWeight = 1;
         int maxPossibleSentimentScore = 10;
 		boolean negate = false;
 		for(int index = 0; index < commentToProcess.length; index++) {
@@ -157,9 +162,16 @@ public class FeedbackService {
 		 int cumulativeSentimentScore = positiveCount * positiveWeight 
                                         + negativeCount * negativeWeight 
                                         + neutralCount * neutralWeight;
+		 System.out.print("score--"+cumulativeSentimentScore);
 		 int K = maxPossibleSentimentScore / 2;
 		 double weightedSentiment = (double)(cumulativeSentimentScore + K) / (maxPossibleSentimentScore + K) * 5;
-		 
+		 System.out.print("score--"+weightedSentiment);
+		 weightedSentiment = Math.max(1, Math.min(5, weightedSentiment));
+		 return weightedSentiment;
+	}
+	
+    private String analyzeSentiment(double weightedSentiment) {
+    	 String finalSentiment;
 		 if (weightedSentiment > 3.5) {
 			    finalSentiment = "Positive";
 	        } else if (weightedSentiment >= 2.5) {
@@ -170,9 +182,66 @@ public class FeedbackService {
 		 return finalSentiment;
 	}
 
-	public String saveFeedbacks(List<Feedback> processedFeedbacks) throws SQLException {
+	public String saveFeedbacks(List<Feedback> processedFeedbacks) throws SQLException, DuplicateDataException {
 		int rowSaved;
+		List<Feedback> duplicateResponses = new ArrayList<>();
+		for(Feedback feedback : processedFeedbacks) {
+			String queryToFind = "SELECT UserId, MenuId FROM feedback WHERE UserId = "+feedback.getUserId()
+			+" AND MenuId = "+feedback.getMenuId()+" AND DATE(Date_Created) = CURDATE()";
+			duplicateResponses = repository.findRecords(queryToFind);
+			if(!duplicateResponses.isEmpty()) {
+				throw new DuplicateDataException("Your feedback for particular meal type is already recorded.");
+			}
+		}
 		rowSaved = repository.save(processedFeedbacks);
 		return String.valueOf(rowSaved);
+	}
+
+	public String viewDiscardedItem() throws SQLException {
+		List<DiscardItem> discardedItemList = new ArrayList<>();
+		List<Feedback> itemFeedbacks = new ArrayList<>();
+		List<Feedback> feedbacksToUpdate = new ArrayList<>();
+		String queryToFind = "SELECT f.MenuId, m.ItemName, AVG(f.Rating) as Avg_Rating, AVG(f.SentimentScore) as Avg_SentimentScore "
+				+ "FROM "
+				+ "feedback f INNER JOIN Menu m "
+				+ "ON f.MenuId = m.MenuId "
+				+ "WHERE f.Is_Discard_Process_Done = 0 "
+				+ "GROUP BY f.MenuId,  m.ItemName";
+		itemFeedbacks = repository.findRecords(queryToFind);
+		for(Feedback feedback : itemFeedbacks) {
+			double avgRating = processFeedbackForDiscardItem(feedback);
+			if(avgRating < 2) {
+				DiscardItem discardItem = new DiscardItem();
+				discardItem.setMenuId(feedback.getMenuId());
+				discardItem.setItemName(feedback.getItemName());
+				discardItem.setAverageRating(avgRating);
+				discardedItemList.add(discardItem);
+			}
+			feedback.setIsDiscardProcessDone(1);
+			feedbacksToUpdate.add(feedback);
+		}
+		updateFeedbacks(feedbacksToUpdate); // to be continued....
+//		DiscardItemRepository<DiscardItem> discardItemRepository = new DiscardItemRepository<>();
+//		discardItemRepository.save(discardedItemList);
+		
+		return null;
+	}
+
+	private void updateFeedbacks(List<Feedback> feedbacksToUpdate) throws SQLException {
+		int rowsUpdated;
+		rowsUpdated = repository.update(feedbacksToUpdate);
+		System.out.println(rowsUpdated);
+		//return String.valueOf(rowsUpdated);
+		
+	}
+
+	private double processFeedbackForDiscardItem(Feedback feedback) {
+		double sentimentScore = feedback.getSentimentScore();
+		float rating = feedback.getRating();
+		double alpha = 0.5; 
+	    double beta = 0.5;
+	    double combinedScore = alpha * sentimentScore + beta * rating;
+	    //boolean isItemDiscarded = combinedScore < 2;
+	    return combinedScore;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.model.Feedback;
 import com.model.Menu;
+import com.model.VotedItem;
 
 public class FeedbackRepository<T> implements Repository<T> {
 
@@ -33,6 +34,7 @@ public class FeedbackRepository<T> implements Repository<T> {
              feedback.setComment(cursor.getString("Comment"));
              feedback.setRating(cursor.getFloat("Rating"));
              feedback.setSentiments(cursor.getString("Sentiments"));
+             feedback.setSentimentScore(cursor.getDouble("SentimentScore"));
              feedback.setCreatedDate(cursor.getTimestamp("Date_Created"));
              feedbacks.add((T) feedback);
          }
@@ -40,10 +42,21 @@ public class FeedbackRepository<T> implements Repository<T> {
 	}
    
 	@Override
-	public List<T> findRecords(String query) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public List<T> findRecords(String query) throws SQLException {
+		List<T> retreivedResponses = new ArrayList<>();
+		ResultSet cursor;
+		cursor = databaseHelper.readAll(query);
+		while (cursor.next()) {
+			Feedback feedback = new Feedback();
+			feedback.setMenuId(cursor.getInt("MenuId"));
+			feedback.setUserId(cursor.getInt("UserId"));
+			if(cursor.getString("ItemName")!= null)feedback.setItemName(cursor.getString("ItemName"));
+			if(cursor.getFloat("Avg_Rating")>0)feedback.setRating(cursor.getFloat("Avg_Rating"));
+			if(cursor.getDouble("Avg_SentimentScore")>0)feedback.setSentimentScore(cursor.getDouble("Avg_SentimentScore"));
+			retreivedResponses.add((T)feedback);
+		}
+		return retreivedResponses;
+   }
 
 	@Override
 	public int save(List<T> entitiesToSave) throws SQLException {
@@ -97,6 +110,15 @@ public class FeedbackRepository<T> implements Repository<T> {
 	            sql.append("Sentiments");
 	            values.append("?");
 	        }
+	        
+	        if (newFeedback.getSentimentScore() > 0.0) {
+	            if (!first) {
+	                sql.append(", ");
+	                values.append(", ");
+	            }
+	            sql.append("SentimentScore");
+	            values.append("?");
+	        }
 
 	        sql.append(") ");
 	        values.append(")");
@@ -110,6 +132,7 @@ public class FeedbackRepository<T> implements Repository<T> {
 	        if (newFeedback.getComment() != null && !newFeedback.getComment().isEmpty()) statement.setString(paramIndex++, newFeedback.getComment());
 	        if (newFeedback.getRating() > 0.0f) statement.setFloat(paramIndex++, newFeedback.getRating());
 	        if (newFeedback.getSentiments() != null && !newFeedback.getSentiments().isEmpty()) statement.setString(paramIndex++, newFeedback.getSentiments());
+	        if (newFeedback.getSentimentScore() > 0.0f) statement.setDouble(paramIndex++, newFeedback.getSentimentScore());
 	        //if (newFeedback.getId() > 0) statement.setInt(paramIndex++, newItem.getMenuId());
 	        System.out.println(statement.toString());
 	        rowSaved =+ databaseHelper.write(statement);
@@ -125,8 +148,46 @@ public class FeedbackRepository<T> implements Repository<T> {
 
 	@Override
 	public int update(List<T> entitiesToUpdate) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		int rowUpdated = 0;
+		for(T updatedItem : entitiesToUpdate) {
+			Feedback updatedFeedback = (Feedback)updatedItem;
+			StringBuilder updateQuery = new StringBuilder("UPDATE feedback SET ");
+			boolean first = true;
+			if (updatedFeedback.getIsDiscardProcessDone() != 0) {
+				updateQuery.append("Is_Discard_Process_Done = ?");
+	            first = false;
+	        }
+	        if (updatedFeedback.getIsProcessed() != 0) {
+	            if (!first) updateQuery.append(", ");
+	            updateQuery.append("Is_Processed = ?");
+	            first = false;
+	        }
+//	        if (updatedMenu.getAvailabilityStatus() != null && !updatedMenu.getAvailabilityStatus().isEmpty()) {
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("AvailabilityStatus = ?");
+//	            first = false;
+//	        }
+//	        if (updatedMenu.getMealType() != null && !updatedMenu.getMealType().isEmpty()) {
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("MealType = ?");
+//	        }
+//	        if (updatedMenu.getScore() != 0.0f ){
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("Score = ?");
+//	        }
+		
+	        updateQuery.append(" WHERE MenuId = ?");
+	        System.out.println(updateQuery.toString());
+	        Connection databaseConnection =  databaseHelper.getConnection();
+	        final PreparedStatement statement = databaseConnection.prepareStatement(updateQuery.toString());
+	        int paramIndex = 1;
+	        if (updatedFeedback.getIsDiscardProcessDone() > 0) statement.setInt(paramIndex++, updatedFeedback.getIsDiscardProcessDone());
+            if (updatedFeedback.getIsProcessed() > 0) statement.setInt(paramIndex++, updatedFeedback.getIsProcessed());
+            if (updatedFeedback.getMenuId() > 0 ) statement.setInt(paramIndex++, updatedFeedback.getMenuId());
+            System.out.println(statement.toString());
+            rowUpdated =+ databaseHelper.write(statement);
+	    }
+		return rowUpdated;
 	}
 }
 

@@ -13,7 +13,7 @@ public class Menu {
 	@Expose
 	private String mealType;
 	@Expose
-	private float score;
+	private double score;
 	@Expose
 	private String name;
 	public int getMenuId() {
@@ -40,10 +40,10 @@ public class Menu {
 	public void setMealType(String mealType) {
 		this.mealType = mealType;
 	}
-	public float getScore() {
+	public double getScore() {
 		return score;
 	}
-	public void setScore(float score) {
+	public void setScore(double score) {
 		this.score = score;
 	}
 	public String getName() {

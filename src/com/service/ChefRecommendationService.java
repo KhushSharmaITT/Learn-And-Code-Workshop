@@ -33,17 +33,22 @@ public class ChefRecommendationService {
 	}
 	public String viewVotedMenu() throws SQLException {
 		List<ChefRecommendation> votedMenu = new ArrayList<>();
-		String queryToFind = "SELECT * FROM chefrecommendation WHERE DATE(Date_Created) = CURDATE()";
+		String queryToFind = "SELECT vi.MenuId, Count(vi.Vote) as VoteCount, m.Name AS MenuItem , m.Score "
+				+ "FROM "
+				+ "voteditem vi INNER JOIN Menu m "
+				+ "ON vi.MenuId = m.MenuId GROUP BY(vi.MenuId) WHERE DATE(vi.Date_Created) = CURDATE()";
         votedMenu = repository.findRecords(queryToFind);
         StringBuilder result = new StringBuilder();
-		result.append(String.format("%-10s %-20s %-10s%n", "ID", "Menu Id", "Vote Count"));
+		result.append(String.format("%-10s %-20s %-10s%n", "Menu Id", "MenuItem", "Vote Count","Score"));
 		result.append("---------------------------------------------------\n");
 		//System.out.println(menuList);
 		for (ChefRecommendation chefRecommendation : votedMenu) {
-	        result.append(String.format("%-10d %-20s %-10s%n",
-	            chefRecommendation.getId(),
+	        result.append(String.format("%-10d %-20s %-10d %-10.2f%n",
+	            //chefRecommendation.getId(),
 	            chefRecommendation.getMenuId(),
-	            chefRecommendation.getVoteCount()
+	            chefRecommendation.getMenuName(),
+	            chefRecommendation.getVoteCount(),
+	            chefRecommendation.getScore()
 	        ));
 	    }
 		System.out.println(result.toString());

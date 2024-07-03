@@ -66,7 +66,7 @@ public class MenuRepository<T> implements Repository<T> {
              if (newItem.getPrice() != 0.0f) statement.setDouble(paramIndex++, newItem.getPrice());
              if (newItem.getAvailabilityStatus() != null && !newItem.getAvailabilityStatus().isEmpty()) statement.setString(paramIndex++, newItem.getAvailabilityStatus());
              if (newItem.getMealType() != null && !newItem.getMealType().isEmpty()) statement.setString(paramIndex++, newItem.getMealType());
-             if (newItem.getScore() != 0.0f) statement.setFloat(paramIndex++, newItem.getScore()); 
+             if (newItem.getScore() != 0.0f) statement.setDouble(paramIndex++, newItem.getScore()); 
              if (newItem.getMenuId() > 0) statement.setInt(paramIndex++, newItem.getMenuId());
             //final Statement statement = databaseConnection.createStatement();
              System.out.println(statement.toString());
@@ -94,7 +94,7 @@ public class MenuRepository<T> implements Repository<T> {
              menu.setPrice(cursor.getFloat("Price"));
              menu.setAvailabilityStatus(cursor.getString("AvailabilityStatus"));
              menu.setMealType(cursor.getString("MealType"));
-             menu.setScore(cursor.getFloat("Score"));
+             menu.setScore(cursor.getDouble("Score"));
              menu.setName(cursor.getString("Name"));
              menus.add((T) menu);
          }
@@ -124,7 +124,7 @@ public class MenuRepository<T> implements Repository<T> {
 	            first = false;
 	        }
 	        if (updatedMenu.getPrice() != 0.0f) {
-	            if (!first) updateQuery.append(", ");
+	            if (!first) updateQuery.append(", "); 
 	            updateQuery.append("Price = ?");
 	            first = false;
 	        }
@@ -151,7 +151,7 @@ public class MenuRepository<T> implements Repository<T> {
              if (updatedMenu.getPrice() != 0.0f) statement.setDouble(paramIndex++, updatedMenu.getPrice());
              if (updatedMenu.getAvailabilityStatus() != null && !updatedMenu.getAvailabilityStatus().isEmpty()) statement.setString(paramIndex++, updatedMenu.getAvailabilityStatus());
              if (updatedMenu.getMealType() != null && !updatedMenu.getMealType().isEmpty()) statement.setString(paramIndex++, updatedMenu.getMealType());
-             if (updatedMenu.getScore() != 0.0f) statement.setFloat(paramIndex++, updatedMenu.getScore()); 
+             if (updatedMenu.getScore() != 0.0f) statement.setDouble(paramIndex++, updatedMenu.getScore()); 
              if (updatedMenu.getMenuId() > 0) statement.setInt(paramIndex++, updatedMenu.getMenuId());
             //final Statement statement = databaseConnection.createStatement();
              System.out.println(statement.toString());
@@ -173,7 +173,7 @@ public class MenuRepository<T> implements Repository<T> {
              menu.setPrice(cursor.getFloat("Price"));
              menu.setAvailabilityStatus(cursor.getString("AvailabilityStatus"));
              menu.setMealType(cursor.getString("MealType"));
-             menu.setScore(cursor.getFloat("Score"));
+             menu.setScore(cursor.getDouble("Score"));
              menu.setName(cursor.getString("Name"));
              menus.add((T) menu);
          }
