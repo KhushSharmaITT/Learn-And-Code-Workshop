@@ -1,15 +1,21 @@
 package com.service;
 
+import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.console.ConsoleService;
 import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
+import com.google.gson.reflect.TypeToken;
+import com.model.Menu;
+import com.model.UserProfile;
 import com.payload.UserPayload;
 import com.repository.UserRepository;
 import com.utility.ErrorMessageConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.UserActionWrapper;
 import com.utility.user.UserWrapper;
 
 public class UserService {
@@ -43,4 +49,14 @@ public class UserService {
 		}
 		return userToAuthenticate;
 	}
+
+	public UserProfile getUserProfile() {
+		UserProfile userProfile = new UserProfile();
+		userProfile.setPreference(ConsoleService.getUserInput("Enter your preference(Vegetarian/Non Vegetarian/Eggetarian) : ").toLowerCase());
+		userProfile.setSpiceLevel(ConsoleService.getUserInput("Enter your spice level(High/Medium/Low) : ").toLowerCase());
+		userProfile.setCuisinePreference(ConsoleService.getUserInput("What do you prefer most(North Indian/South Indian/Other) : ").toLowerCase());
+		userProfile.setSweetTooth(ConsoleService.getUserInput("Do you have a sweet tooth(Yes/No) : ").toLowerCase());
+		return userProfile;
+	}
+
 }

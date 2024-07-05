@@ -3,6 +3,7 @@ package com.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class FeedbackRepository<T> implements Repository<T> {
 	public List<T> findAll() throws SQLException {
 		List<T> feedbacks = new ArrayList<>();
 		ResultSet cursor;
-		String selectQuery = "SELECT * FROM feedback";
+		String selectQuery = "SELECT * FROM feedback WHERE Is_Processed = 0";
 		cursor = databaseHelper.readAll(selectQuery);
 		 while (cursor.next()) {
              Feedback feedback = new Feedback();
@@ -46,10 +47,12 @@ public class FeedbackRepository<T> implements Repository<T> {
 		List<T> retreivedResponses = new ArrayList<>();
 		ResultSet cursor;
 		cursor = databaseHelper.readAll(query);
+		ResultSetMetaData rsmd = null;
+        rsmd = cursor.getMetaData();
 		while (cursor.next()) {
 			Feedback feedback = new Feedback();
 			feedback.setMenuId(cursor.getInt("MenuId"));
-			feedback.setUserId(cursor.getInt("UserId"));
+			if(isColumnPresent(rsmd, "UserId"))feedback.setUserId(cursor.getInt("UserId"));
 			if(cursor.getString("ItemName")!= null)feedback.setItemName(cursor.getString("ItemName"));
 			if(cursor.getFloat("Avg_Rating")>0)feedback.setRating(cursor.getFloat("Avg_Rating"));
 			if(cursor.getDouble("Avg_SentimentScore")>0)feedback.setSentimentScore(cursor.getDouble("Avg_SentimentScore"));
@@ -57,6 +60,16 @@ public class FeedbackRepository<T> implements Repository<T> {
 		}
 		return retreivedResponses;
    }
+
+	private boolean isColumnPresent(ResultSetMetaData rsmd, String columnName) throws SQLException {
+		int columnCount = rsmd.getColumnCount();
+        for (int index = 1; index <= columnCount; index++) {
+            if (rsmd.getColumnName(index).equalsIgnoreCase(columnName)) {
+                return true;
+            }
+        }
+        return false;
+	}
 
 	@Override
 	public int save(List<T> entitiesToSave) throws SQLException {
@@ -135,7 +148,7 @@ public class FeedbackRepository<T> implements Repository<T> {
 	        if (newFeedback.getSentimentScore() > 0.0f) statement.setDouble(paramIndex++, newFeedback.getSentimentScore());
 	        //if (newFeedback.getId() > 0) statement.setInt(paramIndex++, newItem.getMenuId());
 	        System.out.println(statement.toString());
-	        rowSaved =+ databaseHelper.write(statement);
+	        rowSaved += databaseHelper.write(statement);
 		}
 	        return rowSaved;
 	}
@@ -185,7 +198,7 @@ public class FeedbackRepository<T> implements Repository<T> {
             if (updatedFeedback.getIsProcessed() > 0) statement.setInt(paramIndex++, updatedFeedback.getIsProcessed());
             if (updatedFeedback.getMenuId() > 0 ) statement.setInt(paramIndex++, updatedFeedback.getMenuId());
             System.out.println(statement.toString());
-            rowUpdated =+ databaseHelper.write(statement);
+            rowUpdated += databaseHelper.write(statement);
 	    }
 		return rowUpdated;
 	}

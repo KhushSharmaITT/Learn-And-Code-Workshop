@@ -1,5 +1,6 @@
 package com.service;
 
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.console.ConsoleService;
+import com.google.gson.reflect.TypeToken;
 import com.model.Feedback;
 import com.model.Menu;
 import com.payload.MenuPayload;
@@ -14,15 +16,18 @@ import com.repository.FeedbackRepository;
 import com.repository.MenuRepository;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class MenuService {
 
-	private JsonWrapper<MenuPayload> jsonWrapper;
+	private Type type;
+	private JsonWrapper<UserActionWrapper<Menu>> jsonWrapper;
 	private MenuRepository<Menu> repository;
 
 	public MenuService() {
-		jsonWrapper = new JsonWrapper<>(MenuPayload.class);
-        jsonWrapper.setPrettyFormat(true);
+		type = new TypeToken<UserActionWrapper<Menu>>() {}.getType();
+		jsonWrapper = new JsonWrapper<>(type);
+		jsonWrapper.setPrettyFormat(true);
         repository = new MenuRepository<>(); 
 	}
 
@@ -36,9 +41,9 @@ public class MenuService {
 		return menuItem;
 	}
 
-	public MenuPayload prepareMenuPayload(RequestWrapper requestWrapper) {
-		MenuPayload menuPayload = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
-		return menuPayload;
+	public UserActionWrapper<Menu> prepareUserActionWrapper(RequestWrapper requestWrapper) {
+		UserActionWrapper<Menu> userActionWrapper = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
+		return userActionWrapper;
 	}
 
 	public String saveItem(List<Menu> newMenuItems) throws SQLException {
@@ -100,6 +105,7 @@ public class MenuService {
 	}
 
 	public String deleteMenu(List<Menu> deletedItems) throws SQLException {
+		System.out.println("delete");
 		int rowDeleted;
 		rowDeleted = repository.delete(deletedItems);
 		return String.valueOf(rowDeleted);
@@ -109,6 +115,7 @@ public class MenuService {
 		double alpha = 0.5; 
         double beta = 0.5;
 		final FeedbackRepository<Feedback> feedbackRepository = new FeedbackRepository<>();
+		List<Feedback> feedbacksToUpdate = new ArrayList<>();
 		//final FeedbackService feedbackService = new FeedbackService();
 		List<Feedback> feedbackList = feedbackRepository.findAll(); // only query those feedbacks which is not processed.
 		Hashtable<Integer, Double> scoreMap = new Hashtable<>();
@@ -116,13 +123,21 @@ public class MenuService {
             int menuId = feedback.getMenuId();
             float rating = feedback.getRating();
             double sentimentScore = feedback.getSentimentScore();
-            
-            //float sentimentScore = feedbackService.analyzeSentiment(sentiment);
             double combinedScore = alpha * sentimentScore + beta * rating;
             double finalScore = Math.max(1, Math.min(5, combinedScore));
             scoreMap.put(menuId, scoreMap.getOrDefault(menuId, 0.0) + finalScore);
+            feedback.setIsProcessed(1);
+            feedbacksToUpdate.add(feedback);
         }
+        updateFeedbacks(feedbacksToUpdate);
 		return scoreMap;
+	}
+
+	private void updateFeedbacks(List<Feedback> feedbacksToUpdate) throws SQLException {
+		int rowsUpdated;
+		FeedbackRepository<Feedback> feedbackRepository = new FeedbackRepository<>();
+		rowsUpdated = feedbackRepository.update(feedbacksToUpdate);
+		System.out.println(rowsUpdated);
 	}
 
 	public List<Menu> prepareMenuItemforUpdatedScore(Hashtable<Integer, Double> menuIdWithScoreMap) {
@@ -181,13 +196,6 @@ public class MenuService {
 		}
 		// TODO Auto-generated method stub
 		return itemsToRolledOut;
-	}
-
-	public Menu getDiscardItem() {
-		Menu menuItem = new Menu();
-		menuItem.setMenuId(Integer.parseInt(ConsoleService.getUserInput("Enter Menu Id :")));
-		menuItem.setName(ConsoleService.getUserInput("Enter Name :"));
-		return menuItem;
 	}
 
 }

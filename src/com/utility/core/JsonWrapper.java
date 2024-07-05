@@ -6,21 +6,23 @@ import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 public class JsonWrapper<T> {
 	private Gson gson;
     private JSONParser parser;
-    private Class<T> classType;
+    private Type type;
 
     public JsonWrapper() {
         gson = new Gson();
         parser = new JSONParser();
     }
 
-    public JsonWrapper(Class<T> classType) {
-        this();
-        this.classType = classType;
-    }
+    public JsonWrapper(Type type) { 
+    	this();
+        this.type = type;
+    } 
 
     public JSONObject getJsonObject(T entity) {
         JSONObject jsonObject = new JSONObject();
@@ -43,7 +45,7 @@ public class JsonWrapper<T> {
     }
 
     public T convertIntoObject(String jsonString) {
-        T javaObject = gson.fromJson(jsonString, classType);
+        T javaObject = gson.fromJson(jsonString, type);
         return javaObject;
     }
 

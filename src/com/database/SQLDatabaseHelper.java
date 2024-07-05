@@ -8,12 +8,14 @@ import java.sql.SQLException;
 
 import com.model.Menu;
 
-public class SQLDatabaseHelper<T> implements DatabaseHelper<T>{
+public class SQLDatabaseHelper implements DatabaseHelper{
 
 	private Connection databaseConnection;
 
     public SQLDatabaseHelper() {
-        databaseConnection = initializeConnection();
+    	if(this.databaseConnection == null) {
+    		databaseConnection = initializeConnection();
+    	}
     }
     
     @Override
@@ -48,39 +50,27 @@ public class SQLDatabaseHelper<T> implements DatabaseHelper<T>{
     @Override
     public ResultSet read(String selectQueryText, String Id) throws SQLException {
         ResultSet cursor = null;
-        //try {
             final PreparedStatement statement = databaseConnection.prepareStatement(selectQueryText);
             statement.setString(1, Id);
             cursor = statement.executeQuery();
-       // } catch (SQLException issue) {
-        //    System.out.println("Failed to retrieve from DB : "+issue.getLocalizedMessage());
-       // }
         return cursor;
     }
 
     @Override
     public ResultSet readAll(String selectQueryText) throws SQLException {
         ResultSet cursor = null;
-        //try {
             final PreparedStatement statement = databaseConnection.prepareStatement(selectQueryText);
             cursor = statement.executeQuery();
-        //} catch (SQLException issue) {
-        //    System.out.println("Failed to retrieve from DB : "+issue.getLocalizedMessage());
-        //}
         return cursor;
     }
 
 	@Override
 	public int delete(String deleteQuery, String menuId) throws SQLException{
 		int rowDeleted = 0;
-		//try {
         	final PreparedStatement statement = databaseConnection.prepareStatement(deleteQuery);
         	statement.setString(1, menuId);
         	System.out.println(statement.toString());
         	rowDeleted = statement.executeUpdate();
-        //} catch (SQLException issue) {
-        //    System.out.println("Failed to write into DB : "+issue.getLocalizedMessage());
-        //}
 		return rowDeleted;
 	}
 

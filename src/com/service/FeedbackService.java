@@ -4,6 +4,7 @@ import com.payload.FeedbackPayload;
 import com.repository.DiscardItemRepository;
 import com.repository.FeedbackRepository;
 
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,14 +14,19 @@ import java.util.List;
 
 import com.console.ConsoleService;
 import com.exception.DuplicateDataException;
+import com.google.gson.reflect.TypeToken;
+import com.model.ChefRecommendation;
 import com.model.DiscardItem;
 import com.model.Feedback;
+import com.model.Menu;
 import com.model.VotedItem;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class FeedbackService {
-	private JsonWrapper<FeedbackPayload> jsonWrapper;
+	private Type type;
+	private JsonWrapper<UserActionWrapper<Feedback>> jsonWrapper;
 	private FeedbackRepository<Feedback> repository;
 	private final HashSet<String> goodWords = new HashSet<>(Arrays.asList(
             "delicious", "tasty", "delectable", "savory", "scrumptious", 
@@ -70,8 +76,9 @@ public class FeedbackService {
 	            "no way", "no matter"
 	        ));
 	public FeedbackService() {
-		jsonWrapper = new JsonWrapper<>(FeedbackPayload.class);
-        jsonWrapper.setPrettyFormat(true);
+		type = new TypeToken<UserActionWrapper<Feedback>>() {}.getType();
+		jsonWrapper = new JsonWrapper<>(type);
+		jsonWrapper.setPrettyFormat(true);
         repository = new FeedbackRepository<>();
 	}
 
@@ -97,9 +104,9 @@ public class FeedbackService {
 		return userFeedback;
 	}
 
-	public FeedbackPayload getFeedbackPayload(RequestWrapper requestWrapper) {
-		FeedbackPayload feedbackPayload = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
-		return feedbackPayload;
+	public UserActionWrapper<Feedback> prepareUserActionWrapper(RequestWrapper requestWrapper) {
+		UserActionWrapper<Feedback> userActionWrapper = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
+		return userActionWrapper;
 	}
 
 	public List<Feedback> processFeedbacksForSentiments(List<Feedback> feedbackWrapperDetails) {
@@ -220,11 +227,23 @@ public class FeedbackService {
 			feedback.setIsDiscardProcessDone(1);
 			feedbacksToUpdate.add(feedback);
 		}
-		updateFeedbacks(feedbacksToUpdate); // to be continued....
-//		DiscardItemRepository<DiscardItem> discardItemRepository = new DiscardItemRepository<>();
-//		discardItemRepository.save(discardedItemList);
+		updateFeedbacks(feedbacksToUpdate);
+		DiscardItemRepository<DiscardItem> discardItemRepository = new DiscardItemRepository<>();
+		discardItemRepository.save(discardedItemList);
 		
-		return null;
+		StringBuilder result = new StringBuilder();
+		result.append(String.format("%-10s %-20s %-10s%n", "Menu ID", "MenuItem", "Average Rating"));
+		result.append("---------------------------------------\n");
+		//System.out.println(menuList);
+		for (DiscardItem discardItem : discardedItemList) {
+	        result.append(String.format("%-10d %-20s %-10.2f%n",
+	        		discardItem.getMenuId(),
+	        		discardItem.getItemName(),
+	        		discardItem.getAverageRating()
+	        ));
+	    }
+		System.out.println(result.toString());
+	    return result.toString();
 	}
 
 	private void updateFeedbacks(List<Feedback> feedbacksToUpdate) throws SQLException {

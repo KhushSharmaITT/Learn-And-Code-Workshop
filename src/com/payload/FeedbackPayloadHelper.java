@@ -1,16 +1,16 @@
 package com.payload;
 
+import java.lang.reflect.Type;
 import java.util.Hashtable;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
 import com.model.Feedback;
-import com.model.Menu;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class FeedbackPayloadHelper<T> implements Payload<T> {
 
@@ -24,8 +24,9 @@ public class FeedbackPayloadHelper<T> implements Payload<T> {
 	}
 	@Override
 	public T getPayload() {
+		Type type = new TypeToken<UserActionWrapper<Feedback>>() {}.getType();
 		System.out.println("In menu get payload");
-		JsonWrapper<FeedbackPayload> jsonWrapper = new JsonWrapper<>(FeedbackPayload.class);
+		JsonWrapper<UserActionWrapper<Feedback>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
 			requestWrapper = new RequestWrapper();
@@ -42,13 +43,10 @@ public class FeedbackPayloadHelper<T> implements Payload<T> {
 		//return null;
 	}
 
-	private FeedbackPayload getMenuPayload() {
+	private UserActionWrapper<Feedback> getMenuPayload() {
 		System.out.println("In feedback payload");
-		FeedbackPayload feedbackPayload = null;
 		if(ActionChoiceConstant.EMPLOYEE_FEEDBACK == userInput.keySet().toArray()[0]) {
-			feedbackPayload = new FeedbackPayload();
-			feedbackPayload.setFeedbackWrapperDetails((List<Feedback>)userInput.get(ActionChoiceConstant.EMPLOYEE_FEEDBACK));
-			return feedbackPayload;
+			return (UserActionWrapper<Feedback>)userInput.get(ActionChoiceConstant.EMPLOYEE_FEEDBACK);
 		}
 		return null;
 	}

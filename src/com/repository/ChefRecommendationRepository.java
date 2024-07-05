@@ -3,12 +3,12 @@ package com.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.model.ChefRecommendation;
-import com.model.Menu;
 
 public class ChefRecommendationRepository<T> implements Repository<T> {
 
@@ -72,20 +72,34 @@ public class ChefRecommendationRepository<T> implements Repository<T> {
 
 	@Override
 	public List<T> findRecords(String query) throws SQLException {
-		List<T> votedMenus = new ArrayList<>();
+		List<T> retrievedRecords = new ArrayList<>();
 		ResultSet cursor;
-		//String selectQuery = "SELECT * FROM Menu";
 		cursor = databaseHelper.readAll(query);
+		ResultSetMetaData rsmd = null;
+        rsmd = cursor.getMetaData();
 		 while (cursor.next()) {
-             ChefRecommendation votedMenu = new ChefRecommendation();
-             votedMenu.setMenuId(cursor.getInt("MenuId"));
-             //votedMenu.setId(cursor.getInt("Id"));
-             if(cursor.getInt("VoteCount") > 0)votedMenu.setVoteCount(cursor.getInt("VoteCount"));
-             votedMenu.setMenuName(cursor.getString("MenuItem"));
-             votedMenu.setScore(cursor.getFloat("Score"));
-             votedMenus.add((T)votedMenu);
+             ChefRecommendation retrievedRecord = new ChefRecommendation();
+             retrievedRecord.setMenuId(cursor.getInt("MenuId"));
+             retrievedRecord.setMenuName(cursor.getString("MenuName"));
+             retrievedRecord.setScore(cursor.getFloat("Score"));
+             if(isColumnPresent(rsmd, "VoteCount"))retrievedRecord.setVoteCount(cursor.getInt("VoteCount"));
+             if(isColumnPresent(rsmd, "vegetarian_preference") && cursor.getString("Preference")!= null)retrievedRecord.setPreference(cursor.getString("Preference"));
+             if(isColumnPresent(rsmd, "spice_level"))retrievedRecord.setSpiceLevel(cursor.getString("SpiceLevel"));
+             if(isColumnPresent(rsmd, "cuisine_preference"))retrievedRecord.setCuisinePreference(cursor.getString("CuisinePreference"));
+             if(isColumnPresent(rsmd, "sweet_tooth"))retrievedRecord.setSweetTooth(cursor.getString("SweetTooth"));
+             if(isColumnPresent(rsmd, "MealType"))retrievedRecord.setMealType(cursor.getString("MealType"));
+             retrievedRecords.add((T)retrievedRecord);
          }
-		return votedMenus;
+		return retrievedRecords;
+	}
+	private boolean isColumnPresent(ResultSetMetaData rsmd, String columnName) throws SQLException {
+		int columnCount = rsmd.getColumnCount();
+        for (int index = 1; index <= columnCount; index++) {
+            if (rsmd.getColumnName(index).equalsIgnoreCase(columnName)) {
+                return true;
+            }
+        }
+        return false;
 	}
 
 	@Override
