@@ -1,15 +1,19 @@
 package com.payload;
 
+import java.lang.reflect.Type;
 import java.util.Hashtable;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
+import com.model.Menu;
 import com.model.VotedItem;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class VotedItemPayloadHelper<T> implements Payload<T> {
 
@@ -23,8 +27,9 @@ public class VotedItemPayloadHelper<T> implements Payload<T> {
 	}
 	@Override
 	public T getPayload() {
-		System.out.println("In voted Item get payload");
-		JsonWrapper<VotedItemPayload> jsonWrapper = new JsonWrapper<>(VotedItemPayload.class);
+		Type type = new TypeToken<UserActionWrapper<VotedItem>>() {}.getType();
+		System.out.println("In menu get payload");
+		JsonWrapper<UserActionWrapper<VotedItem>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
 			requestWrapper = new RequestWrapper();
@@ -46,16 +51,11 @@ public class VotedItemPayloadHelper<T> implements Payload<T> {
 		// TODO Auto-generated method stub
 		
 	}
-	private VotedItemPayload getVotedItemPayload() {
+	private UserActionWrapper<VotedItem> getVotedItemPayload() {
 		// TODO Auto-generated method stub
 		System.out.println("In menu get voted item payload");
-		VotedItemPayload votedItemPayload = null;
 		if(ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS == userInput.keySet().toArray()[0]) {
-			System.out.println("in if");
-			votedItemPayload = new VotedItemPayload();
-			votedItemPayload.setVotedItemWrapperDetails((List<VotedItem>)userInput.get(ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS));
-			System.out.println(votedItemPayload.getVotedItemWrapperDetails());
-			return votedItemPayload;
+			return (UserActionWrapper<VotedItem>)userInput.get(ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS);
 		}
 		return null;
 	}

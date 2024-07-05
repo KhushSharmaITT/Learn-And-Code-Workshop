@@ -7,7 +7,7 @@ import com.database.DatabaseHelper;
 import com.database.SQLDatabaseHelper;
 
 public interface Repository<T> {
-	public DatabaseHelper<Object> databaseHelper = new SQLDatabaseHelper<>();
+	public DatabaseHelper databaseHelper = new SQLDatabaseHelper();
     public int save(List<T> entity) throws SQLException;
     public T find(String id) throws SQLException;
     public List<T> findAll() throws SQLException;

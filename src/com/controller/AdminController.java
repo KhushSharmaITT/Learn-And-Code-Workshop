@@ -12,6 +12,7 @@ import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
 import com.model.Menu;
 import com.service.MenuService;
+import com.utility.core.UserActionWrapper;
 
 public class AdminController implements Controller{
 
@@ -26,6 +27,7 @@ public class AdminController implements Controller{
 		final MenuService menuService = new MenuService();
 		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
 		Hashtable<String, Object> inputsToProcess;
+		UserActionWrapper<Menu> userActionWrapper;
 		List<Menu> menuItems;
 		String actions = "Please choose an option\n"+
 	                      "1. Add Item\n"+
@@ -46,8 +48,13 @@ public class AdminController implements Controller{
                 	menuItems = new ArrayList<>();
                 	item = menuService.addItem();
                 	menuItems.add(item);
+                	
+                	userActionWrapper = new UserActionWrapper<Menu>();
+                	userActionWrapper.setActionData(menuItems);
+                	userActionWrapper.setActionToPerform("Admin:add");
+                	
                     inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:add", menuItems);
+                	inputsToProcess.put("Admin:add", userActionWrapper);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                     break;
@@ -62,8 +69,13 @@ public class AdminController implements Controller{
                 	menuItems = new ArrayList<>();
                     item = menuService.updateItem();
                     menuItems.add(item);
+                    
+                    userActionWrapper = new UserActionWrapper<Menu>();
+                	userActionWrapper.setActionData(menuItems);
+                	userActionWrapper.setActionToPerform("Admin:update");
+                    
                 	inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:update", menuItems);
+                	inputsToProcess.put("Admin:update", userActionWrapper);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                     //userInputAction = new String[] {"Update_Menu","Admin","Database"};
@@ -72,8 +84,13 @@ public class AdminController implements Controller{
                 	menuItems = new ArrayList<>();
                 	item = menuService.getDeleteItem();
                 	menuItems.add(item);
+                	
+                	userActionWrapper = new UserActionWrapper<Menu>();
+                	userActionWrapper.setActionData(menuItems);
+                	userActionWrapper.setActionToPerform("Admin:delete");
+                	
                 	inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:delete", menuItems);
+                	inputsToProcess.put("Admin:delete", userActionWrapper);
                 	clientInputHandler.processArguments(inputsToProcess);
             	    clientInputHandler.processOperation();
                 	//userInputAction = new String[] {"Delete_Item","Admin","Database"};

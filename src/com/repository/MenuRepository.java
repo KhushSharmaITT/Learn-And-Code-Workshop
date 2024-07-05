@@ -24,7 +24,7 @@ public class MenuRepository<T> implements Repository<T> {
 	                sql.append(", ");
 	                values.append(", ");
 	            }
-	            sql.append("Name");
+	            sql.append("ItemName");
 	            values.append("?");
 	            first = false;
 	        }
@@ -95,7 +95,7 @@ public class MenuRepository<T> implements Repository<T> {
              menu.setAvailabilityStatus(cursor.getString("AvailabilityStatus"));
              menu.setMealType(cursor.getString("MealType"));
              menu.setScore(cursor.getDouble("Score"));
-             menu.setName(cursor.getString("Name"));
+             menu.setName(cursor.getString("ItemName"));
              menus.add((T) menu);
          }
 		return menus;
@@ -120,7 +120,7 @@ public class MenuRepository<T> implements Repository<T> {
 			StringBuilder updateQuery = new StringBuilder("UPDATE menu SET ");
 			boolean first = true;
 			if (updatedMenu.getName() != null && !updatedMenu.getName().isEmpty()) {
-				updateQuery.append("Name = ?");
+				updateQuery.append("ItemName = ?");
 	            first = false;
 	        }
 	        if (updatedMenu.getPrice() != 0.0f) {
@@ -174,7 +174,7 @@ public class MenuRepository<T> implements Repository<T> {
              menu.setAvailabilityStatus(cursor.getString("AvailabilityStatus"));
              menu.setMealType(cursor.getString("MealType"));
              menu.setScore(cursor.getDouble("Score"));
-             menu.setName(cursor.getString("Name"));
+             menu.setName(cursor.getString("ItemName"));
              menus.add((T) menu);
          }
 		return menus;

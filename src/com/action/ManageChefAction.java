@@ -4,17 +4,21 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.exception.DiscardMenuDurationException;
 import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
 import com.model.ChefRecommendation;
+import com.model.DiscardItem;
 import com.model.Menu;
 import com.payload.MenuPayload;
 import com.service.ChefRecommendationService;
+import com.service.DiscardItemService;
 import com.service.FeedbackService;
 import com.service.MenuService;
 import com.utility.ActionChoiceConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class ManageChefAction implements Action{
 
@@ -26,7 +30,7 @@ public class ManageChefAction implements Action{
 		menuService = new MenuService();
 	}
 	@Override
-	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException {
+	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException, DiscardMenuDurationException {
 		System.out.println("yeahhhhhh finally in menu recommendation");
 		String actionToPerform = data.split("=")[1].trim();
 		if(actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)) {
@@ -41,10 +45,10 @@ public class ManageChefAction implements Action{
 		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU)) {
 			final String dataToProcess = data.split("=")[0].trim();
 			RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
-			MenuPayload menuRequestPayload = menuService.prepareMenuPayload(requestWrapper);
+			UserActionWrapper<Menu> userActionWrapper = menuService.prepareUserActionWrapper(requestWrapper);
             //String menuIds[] = dataToProcess.split(",");
 			ChefRecommendationService chefRecommendationService = new ChefRecommendationService();
-			List<ChefRecommendation> chefRecommendations = chefRecommendationService.getChefRecommendation(menuRequestPayload.getMenuWrapperDetails());
+			List<ChefRecommendation> chefRecommendations = chefRecommendationService.getChefRecommendation(userActionWrapper.getActionData());
 			String rowsInserted = chefRecommendationService.saveChefRecommendations(chefRecommendations);
 			return rowsInserted +"="+ "Your input is recorded";
 		}
@@ -62,9 +66,21 @@ public class ManageChefAction implements Action{
 		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)) {
 			final String dataToProcess = data.split("=")[0].trim();
 			RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
-		    MenuPayload menuRequestPayload = menuService.prepareMenuPayload(requestWrapper);
-		    String rowDeleted = menuService.deleteMenu(menuRequestPayload.getMenuWrapperDetails());
+			DiscardItemService discardItemService = new DiscardItemService();
+			System.out.println("In discard Item");
+		    UserActionWrapper<DiscardItem> userActionWrapper = discardItemService.prepareUserActionWrapper(requestWrapper);
+		    System.out.println("In discard Item 2");
+		    List<Menu> menuItemsToDelete = discardItemService.prepareItemsToDelete(userActionWrapper);
+		    String rowDeleted = menuService.deleteMenu(menuItemsToDelete);
 		    return rowDeleted +"="+ "Record Deleted Successfully.";
+		}
+		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK)) {
+			final String dataToProcess = data.split("=")[0].trim();
+			RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
+			DiscardItemService discardItemService = new DiscardItemService();
+			UserActionWrapper<DiscardItem> userActionWrapper = discardItemService.prepareUserActionWrapperForFeedback(requestWrapper);
+			String rowsUpdated = discardItemService.update(userActionWrapper.getActionData());
+			return rowsUpdated +"="+ "Successfully updated the records.";
 		}
 		
 		return null;

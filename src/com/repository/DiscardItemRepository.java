@@ -97,8 +97,45 @@ public class DiscardItemRepository<T> implements Repository<T> {
 
 	@Override
 	public int update(List<T> entitiesToUpdate) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		int rowUpdated = 0;
+		for(T updatedItem : entitiesToUpdate) {
+			DiscardItem updatedDiscardItem = (DiscardItem)updatedItem;
+			StringBuilder updateQuery = new StringBuilder("UPDATE DiscardItemTable SET ");
+			boolean first = true;
+			if (updatedDiscardItem.getChefQuestions() != null && !updatedDiscardItem.getChefQuestions().isEmpty()) {
+				updateQuery.append("ChefQuestions = ?");
+	            first = false;
+	        }
+//	        if (updatedMenu.getPrice() != 0.0f) {
+//	            if (!first) updateQuery.append(", "); 
+//	            updateQuery.append("Price = ?");
+//	            first = false;
+//	        }
+//	        if (updatedMenu.getAvailabilityStatus() != null && !updatedMenu.getAvailabilityStatus().isEmpty()) {
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("AvailabilityStatus = ?");
+//	            first = false;
+//	        }
+//	        if (updatedMenu.getMealType() != null && !updatedMenu.getMealType().isEmpty()) {
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("MealType = ?");
+//	        }
+//	        if (updatedMenu.getScore() != 0.0f ){
+//	            if (!first) updateQuery.append(", ");
+//	            updateQuery.append("Score = ?");
+//	        }
+	        updateQuery.append(" WHERE MenuId = ?");
+
+	        System.out.println(updateQuery.toString());
+	        Connection databaseConnection =  databaseHelper.getConnection();
+	        final PreparedStatement statement = databaseConnection.prepareStatement(updateQuery.toString());
+	        int paramIndex = 1;
+	        if (updatedDiscardItem.getChefQuestions()!= null && !updatedDiscardItem.getChefQuestions().isEmpty()) statement.setString(paramIndex++, updatedDiscardItem.getChefQuestions());
+            if (updatedDiscardItem.getMenuId() > 0) statement.setInt(paramIndex++, updatedDiscardItem.getMenuId());
+            System.out.println(statement.toString());
+	        rowUpdated += databaseHelper.write(statement);
+		}
+		return rowUpdated;
 	}
 
 }

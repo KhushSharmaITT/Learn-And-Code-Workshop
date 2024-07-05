@@ -1,23 +1,29 @@
 package com.service;
 
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.console.ConsoleService;
 import com.exception.DuplicateDataException;
+import com.google.gson.reflect.TypeToken;
+import com.model.Menu;
 import com.model.VotedItem;
 import com.payload.VotedItemPayload;
 import com.repository.VotedItemRepository;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class VotedItemService {
 
-	private JsonWrapper<VotedItemPayload> jsonWrapper;
+	private Type type;
+	private JsonWrapper<UserActionWrapper<VotedItem>> jsonWrapper;
 	private VotedItemRepository<VotedItem> repository;
 	public VotedItemService() {
-		jsonWrapper = new JsonWrapper<>(VotedItemPayload.class);
+		type = new TypeToken<UserActionWrapper<VotedItem>>() {}.getType();
+		jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
         repository = new VotedItemRepository<>();
 	}
@@ -28,9 +34,9 @@ public class VotedItemService {
 		return votedItem;
 	}
 
-	public VotedItemPayload getVotedItemPayload(RequestWrapper requestWrapper) {
-		VotedItemPayload votedItemPayload = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
-		return votedItemPayload;
+	public UserActionWrapper<VotedItem> prepareUserActionWrapper(RequestWrapper requestWrapper) {
+		UserActionWrapper<VotedItem> userActionWrapper = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
+		return userActionWrapper;
 	}
 	public String saveVotedItem(List<VotedItem> votedItems) throws SQLException, DuplicateDataException {
 		// TODO Auto-generated method stub

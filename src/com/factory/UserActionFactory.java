@@ -14,11 +14,12 @@ public class UserActionFactory {
 
 	static {
 		actionRegistry.put(ActionChoiceConstant.AUTHENTICATE_USER,"com.action.AuthenticateUserAction");
-		actionRegistry.put(ActionChoiceConstant.ADMIN_ADD,"com.action.ManageMenuAction");
-		actionRegistry.put(ActionChoiceConstant.ADMIN_VIEW,"com.action.ManageMenuAction");
-		actionRegistry.put(ActionChoiceConstant.ADMIN_UPDATE,"com.action.ManageMenuAction");
-		actionRegistry.put(ActionChoiceConstant.ADMIN_DELETE,"com.action.ManageMenuAction");
-		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW,"com.action.ManageMenuAction");
+		actionRegistry.put(ActionChoiceConstant.ADMIN_ADD,"com.action.ManageAdminAction");
+		actionRegistry.put(ActionChoiceConstant.ADMIN_VIEW,"com.action.ManageAdminAction");
+		actionRegistry.put(ActionChoiceConstant.ADMIN_UPDATE,"com.action.ManageAdminAction");
+		actionRegistry.put(ActionChoiceConstant.ADMIN_DELETE,"com.action.ManageAdminAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW,"com.action.ManageAdminAction");
+		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_VIEW_MENU,"com.action.ManageAdminAction");
 		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION,"com.action.ManageChefAction");
 		actionRegistry.put(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,"com.action.ManageChefAction");
 		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT,"com.action.ManageChefAction");
@@ -27,6 +28,9 @@ public class UserActionFactory {
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_FEEDBACK,"com.action.ManageEmployeeAction");
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_VIEW_NOTIFICATION,"com.action.ManageEmployeeAction");
 		actionRegistry.put(ActionChoiceConstant.CHEF_DISCARD_ITEM,"com.action.ManageChefAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST,"com.action.ManageChefAction");
+		actionRegistry.put(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK,"com.action.ManageChefAction");
+		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_UPDATE_PROFILE,"com.action.ManageEmployeeAction");
 	}
 	// argument name should be changed.
 	public static Action getInstance(String protocolFormat) throws  ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {

@@ -20,10 +20,13 @@ import com.exception.UserNotFoundException;
 import com.factory.ControllerFactory;
 import com.factory.DataSerializerFactory;
 import com.payload.ChefRecommendPayloadHelper;
+import com.payload.DiscardItemFeedbackPayloadHelper;
+import com.payload.DiscardItemPayloadHelper;
 import com.payload.FeedbackPayloadHelper;
 import com.payload.MenuPayloadHelper;
 import com.payload.NotificationPayloadHelper;
 import com.payload.UserPayloadHelper;
+import com.payload.UserProfilePayloadHelper;
 import com.payload.VotedItemPayloadHelper;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
@@ -70,7 +73,7 @@ public class ClientHandler {
             final RequestWrapper requestWrapper = userPayload.getPayload();
             protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
-    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)|| actionName.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU) || actionName.equals(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT) || actionName.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)) {
+    	else if(actionName.equals(ActionChoiceConstant.ADMIN_ADD)|| actionName.equals(ActionChoiceConstant.ADMIN_VIEW)||actionName.equals(ActionChoiceConstant.ADMIN_UPDATE)||actionName.equals(ActionChoiceConstant.ADMIN_DELETE)|| actionName.equals(ActionChoiceConstant.CHEF_VIEW)||actionName.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)|| actionName.equals(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU) || actionName.equals(ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT)||actionName.equals(ActionChoiceConstant.EMPLOYEE_VIEW_MENU)) {
     		final MenuPayloadHelper<RequestWrapper> menuPayload = new MenuPayloadHelper<>(userInputs);
     		final RequestWrapper requestWrapper = menuPayload.getPayload(); 
     		protocol = clientService.createRequestCommunicationProtocol(requestWrapper); 
@@ -96,6 +99,21 @@ public class ClientHandler {
     		final RequestWrapper requestWrapper = notificationPayload.getPayload();
     		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
     	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST)|| actionName.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)|| inputHandler.getActionName().equals(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK)) {
+    		final DiscardItemPayloadHelper<RequestWrapper> discardItemPayload = new DiscardItemPayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = discardItemPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    	}
+    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.EMPLOYEE_UPDATE_PROFILE)) {
+    		final UserProfilePayloadHelper<RequestWrapper> discardItemPayload = new UserProfilePayloadHelper<>(userInputs);
+    		final RequestWrapper requestWrapper = discardItemPayload.getPayload();
+    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+    	}
+//    	else if(inputHandler.getActionName().equals(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK)) {
+//    		final DiscardItemFeedbackPayloadHelper<RequestWrapper> discardItemPayload = new DiscardItemFeedbackPayloadHelper<>(userInputs);
+//    		final RequestWrapper requestWrapper = discardItemPayload.getPayload();
+//    		protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
+//    	}
 //    	else if(userInputs[1] == ActionChoiceConstant.ADMIN) {
 //    		final UserPayloadHelper userPayload = new UserPayloadHelper(userInputs);
 //            final RequestWrapper requestWrapper = userPayload.getPayload();

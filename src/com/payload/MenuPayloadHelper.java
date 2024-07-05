@@ -1,15 +1,16 @@
 package com.payload;
 
+import java.lang.reflect.Type;
 import java.util.Hashtable;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
 import com.model.Menu;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class MenuPayloadHelper<T> implements Payload<T> {
 	private RequestWrapper requestWrapper;
@@ -22,13 +23,14 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 	}
 
 	public MenuPayloadHelper() {
-		// TODO Auto-generated constructor stub
+		// TODO Auto-generated constructor stub 
 	}
 
 	@Override
 	public T getPayload() {
+		Type type = new TypeToken<UserActionWrapper<Menu>>() {}.getType();
 		System.out.println("In menu get payload");
-		JsonWrapper<MenuPayload> jsonWrapper = new JsonWrapper<>(MenuPayload.class);
+		JsonWrapper<UserActionWrapper<Menu>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
 			requestWrapper = new RequestWrapper();
@@ -51,31 +53,23 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 
 	}
 
-	private MenuPayload getMenuPayload() {
+	private UserActionWrapper<Menu> getMenuPayload() {
 		System.out.println("In menu get menu payload");
-		MenuPayload menuPayload = null;
+		//MenuPayload menuPayload = null;
 		if(ActionChoiceConstant.ADMIN_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT == userInput.keySet().toArray()[0]) {
 			return null;
 		}
 		else if(ActionChoiceConstant.ADMIN_ADD == userInput.keySet().toArray()[0]) {
-			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_ADD));
-			return menuPayload;
+			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.ADMIN_ADD);
 		}
 		else if(ActionChoiceConstant.ADMIN_UPDATE == userInput.keySet().toArray()[0]) {
-			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_UPDATE));
-			return menuPayload;
+			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.ADMIN_UPDATE);
 		}
 		else if(ActionChoiceConstant.ADMIN_DELETE == userInput.keySet().toArray()[0]){
-			menuPayload = new MenuPayload();
-			menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.ADMIN_DELETE));
-			return menuPayload;
-		}
+			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.ADMIN_DELETE);
+		} 
 		else
-			menuPayload = new MenuPayload();
-		    menuPayload.setMenuWrapperDetails((List<Menu>)userInput.get(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU));
-		    return menuPayload;
+			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU);
 		//return menuPayload;
 	}
 

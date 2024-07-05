@@ -1,13 +1,18 @@
 package com.payload;
 
+import java.lang.reflect.Type;
 import java.util.Hashtable;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
+import com.model.Menu;
+import com.model.Notification;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
+import com.utility.core.UserActionWrapper;
 
 public class NotificationPayloadHelper<T> implements Payload<T> {
 	private RequestWrapper requestWrapper;
@@ -20,8 +25,9 @@ public class NotificationPayloadHelper<T> implements Payload<T> {
 	}
 	@Override
 	public T getPayload() {
+		Type type = new TypeToken<UserActionWrapper<Notification>>() {}.getType();
 		System.out.println("In menu get payload");
-		JsonWrapper<NotificationPayload> jsonWrapper = new JsonWrapper<>(NotificationPayload.class);
+		JsonWrapper<UserActionWrapper<Notification>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
 			requestWrapper = new RequestWrapper();
@@ -43,10 +49,9 @@ public class NotificationPayloadHelper<T> implements Payload<T> {
 
 	}
 	
-	private NotificationPayload getNotificationPayload() {
-		NotificationPayload notificationPayload = null;
+	private UserActionWrapper<Notification> getNotificationPayload() {
 		if(ActionChoiceConstant.EMPLOYEE_VIEW_NOTIFICATION == userInput.keySet().toArray()[0]) {
-			return notificationPayload;
+			return null;
 		}
 		return null;
 	}
