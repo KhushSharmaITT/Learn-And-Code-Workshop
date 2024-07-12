@@ -10,7 +10,8 @@ import com.exception.UserNotFoundException;
 import com.model.ChefRecommendation;
 import com.model.DiscardItem;
 import com.model.Menu;
-import com.payload.MenuPayload;
+import com.payload.DiscardItemPayloadHelper;
+import com.payload.MenuPayloadHelper;
 import com.service.ChefRecommendationService;
 import com.service.DiscardItemService;
 import com.service.FeedbackService;
@@ -18,6 +19,7 @@ import com.service.MenuService;
 import com.utility.ActionChoiceConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
+import com.utility.core.ResponseWrapper;
 import com.utility.core.UserActionWrapper;
 
 public class ManageChefAction implements Action{
@@ -33,6 +35,8 @@ public class ManageChefAction implements Action{
 	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException, DiscardMenuDurationException {
 		System.out.println("yeahhhhhh finally in menu recommendation");
 		String actionToPerform = data.split("=")[1].trim();
+		Hashtable<String, Object> outputToProcess;
+	    DiscardItemPayloadHelper<ResponseWrapper> discardItemPayloadHelper;
 		if(actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION)) {
 			final Hashtable<Integer, Double> menuIdWithScoreMap;
 			menuIdWithScoreMap = menuService.prepareRecommendations();
@@ -58,10 +62,19 @@ public class ManageChefAction implements Action{
 			return rowsRetrieved +"="+ "Successfully retrieved the records.";
         }
 		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST)) {
-			//ChefRecommendationService chefRecommendationService = new ChefRecommendationService();
+			outputToProcess = new Hashtable<>();
 			FeedbackService feedbackService = new FeedbackService();
-			String rowsRetrieved = feedbackService.viewDiscardedItem();
-			return rowsRetrieved +"="+ "Successfully retrieved the records.";
+			List<DiscardItem> rowsRetrieved = feedbackService.viewDiscardedItem();
+			UserActionWrapper<DiscardItem> userActionResponseWrapper = new UserActionWrapper<>();
+			userActionResponseWrapper.setActionData(rowsRetrieved);
+			userActionResponseWrapper.setActionToPerform(actionToPerform);
+			outputToProcess.put(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST_RESPONSE, userActionResponseWrapper);
+			discardItemPayloadHelper = new DiscardItemPayloadHelper<>(outputToProcess);
+			final ResponseWrapper responseWrapper = discardItemPayloadHelper.getResponsePayload();
+			JsonWrapper<ResponseWrapper> jsonResponseWrapper = new JsonWrapper<>(ResponseWrapper.class);
+	    	jsonResponseWrapper.setPrettyFormat(true);
+			final String jsonString = jsonResponseWrapper.convertIntoJson(responseWrapper);
+			return jsonString +"="+ "Successfully retrieved the records.";
         }
 		else if(actionToPerform.equals(ActionChoiceConstant.CHEF_DISCARD_ITEM)) {
 			final String dataToProcess = data.split("=")[0].trim();

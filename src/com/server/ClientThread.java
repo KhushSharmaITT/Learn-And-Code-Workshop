@@ -3,6 +3,7 @@ package com.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.Hashtable;
@@ -128,7 +129,7 @@ public class ClientThread implements Runnable{
 
 	private void sendResponseToClient(CommunicationProtocol responseProtocol) throws IOException, DataSerializationException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final DataSerializer serializer = DataSerializerFactory.getInstance(ProtocolConstant.JSON);
-        final OutputStreamWriter socketWriter = socketHelper.getWriter(clientSocket);
+        final PrintWriter socketWriter = socketHelper.getWriter(clientSocket);
         socketWriter.write("type=json\n");
         System.out.println("in client thread prepareResponse");
         socketWriter.write(serializer.serialize(responseProtocol) + "\n");

@@ -45,7 +45,8 @@ public class DiscardItemService {
 		return userActionWrapper;
 	}
 	public String update(List<DiscardItem> actionData) throws SQLException {
-		int rowUpdated;
+		System.out.println("Updated discard feedback");
+		int rowUpdated = 0;
 		rowUpdated = repository.update(actionData);
 		return String.valueOf(rowUpdated);
 	}

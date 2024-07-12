@@ -11,7 +11,6 @@ import com.console.ConsoleService;
 import com.google.gson.reflect.TypeToken;
 import com.model.Feedback;
 import com.model.Menu;
-import com.payload.MenuPayload;
 import com.repository.FeedbackRepository;
 import com.repository.MenuRepository;
 import com.utility.core.JsonWrapper;
@@ -53,26 +52,26 @@ public class MenuService {
 
 	}
 
-	public String viewMenu() throws SQLException {
+	public List<Menu> viewMenu() throws SQLException {
 		System.out.println("In view menu");
 		List<Menu> menuList = new ArrayList<>();
 		menuList = repository.findAll();
-		StringBuilder result = new StringBuilder();
-		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
-		result.append("-------------------------------------------------------------------------------------\n");
-		//System.out.println(menuList);
-		for (Menu menu : menuList) {
-	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
-	            menu.getMenuId(),
-	            menu.getName(),
-	            menu.getPrice(),
-	            menu.getAvailabilityStatus(),
-	            menu.getScore(),
-	            menu.getMealType()
-	        ));
-	    }
-		System.out.println(result.toString());
-		return result.toString();
+//		StringBuilder result = new StringBuilder();
+//		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
+//		result.append("-------------------------------------------------------------------------------------\n");
+//		//System.out.println(menuList);
+//		for (Menu menu : menuList) {
+//	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
+//	            menu.getMenuId(),
+//	            menu.getName(),
+//	            menu.getPrice(),
+//	            menu.getAvailabilityStatus(),
+//	            menu.getScore(),
+//	            menu.getMealType()
+//	        ));
+//	    }
+//		System.out.println(result.toString());
+		return menuList;
 	}
 
 	public Menu updateItem() {

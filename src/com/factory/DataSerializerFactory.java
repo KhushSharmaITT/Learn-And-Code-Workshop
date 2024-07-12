@@ -27,6 +27,6 @@ public class DataSerializerFactory {
 			constructor.setAccessible(true);
 			serializer = (DataSerializer) constructor.newInstance();
         return serializer;
-    }
+    } 
 
 }

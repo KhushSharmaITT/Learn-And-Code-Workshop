@@ -106,24 +106,6 @@ public class DiscardItemRepository<T> implements Repository<T> {
 				updateQuery.append("ChefQuestions = ?");
 	            first = false;
 	        }
-//	        if (updatedMenu.getPrice() != 0.0f) {
-//	            if (!first) updateQuery.append(", "); 
-//	            updateQuery.append("Price = ?");
-//	            first = false;
-//	        }
-//	        if (updatedMenu.getAvailabilityStatus() != null && !updatedMenu.getAvailabilityStatus().isEmpty()) {
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("AvailabilityStatus = ?");
-//	            first = false;
-//	        }
-//	        if (updatedMenu.getMealType() != null && !updatedMenu.getMealType().isEmpty()) {
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("MealType = ?");
-//	        }
-//	        if (updatedMenu.getScore() != 0.0f ){
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("Score = ?");
-//	        }
 	        updateQuery.append(" WHERE MenuId = ?");
 
 	        System.out.println(updateQuery.toString());

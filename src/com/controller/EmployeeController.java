@@ -1,15 +1,19 @@
 package com.controller;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList; 
 import java.util.Hashtable;
 import java.util.List;
 
+import com.client.ClientHandler;
 import com.client.ClientInputHandler;
 import com.console.ConsoleService;
 import com.exception.InvalidArgumentException;
 import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
+import com.helper.EmployeeHelper;
 import com.model.ChefRecommendation;
 import com.model.Feedback;
 import com.model.Menu;
@@ -25,7 +29,7 @@ import com.utility.core.ResponseWrapper;
 import com.utility.core.UserActionWrapper;
 import com.utility.user.UserWrapper;
 
-public class EmployeeController implements Controller{
+public class EmployeeController implements Controller{ 
 
 	private JsonWrapper<ResponseWrapper> jsonWrapper;
     public EmployeeController() {
@@ -34,7 +38,7 @@ public class EmployeeController implements Controller{
     }
 	@Override
 	public void handleAction(String data)
-			throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException {
+			throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException, UnknownHostException, IOException {
     	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(data);
     	UserPayload userResponsePayload = getUserDetails(responseWrapper);
         processEmployeeAction(userResponsePayload.getUserWrapperDetails());
@@ -49,7 +53,7 @@ public class EmployeeController implements Controller{
 	    UserPayload userResponsePayload = jsonWrapper.convertIntoObject(responseWrapper.jsonString);
 		return userResponsePayload;
 	}
-	private void processEmployeeAction(UserWrapper userWrapper) throws InvalidArgumentException {
+	private void processEmployeeAction(UserWrapper userWrapper) throws InvalidArgumentException, UnknownHostException, IOException {
 		// TODO Auto-generated method stub
 		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
 		final VotedItemService votedItemService = new VotedItemService();
@@ -81,6 +85,14 @@ public class EmployeeController implements Controller{
         	inputsToProcess.put("Employee:view", "viewMenu");
         	clientInputHandler.processArguments(inputsToProcess);
     	    clientInputHandler.processOperation();
+    	    final ClientHandler clientHandler = ClientHandler.getInstance();
+            String datafromServer = clientHandler.getDataFromServer();
+            if(!datafromServer.isBlank()) {
+            	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
+            	final EmployeeHelper helper = EmployeeHelper.getInstance();
+            	UserActionWrapper<Menu> serverResponseWrapper = helper.getServerResponse(responseWrapper);
+            	helper.viewMenu(serverResponseWrapper.getActionData());
+            }
 			break;
 		case "3":
 			UserActionWrapper<UserProfile> userActionWrapper_3 = new UserActionWrapper<>();

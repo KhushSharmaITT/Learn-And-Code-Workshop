@@ -1,13 +1,23 @@
 package com.client;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 
 import com.exception.DataSerializationException;
 import com.exception.InvalidArgumentException;
+import com.factory.HelperFactory;
+import com.helper.AdminHelper;
+import com.helper.Helper;
+import com.model.Menu;
+import com.utility.ActionChoiceConstant;
+import com.utility.core.UserActionWrapper;
+import com.utility.user.UserWrapper;
 
 public class ClientInputHandler {
 
@@ -15,7 +25,10 @@ public class ClientInputHandler {
 	private Hashtable<String,Object> userInput;
     private static ClientInputHandler clientInputHandler;
     private Scanner keyboardInput;
-
+    private Set<String> actionsToValidate = new HashSet<String>(Arrays.asList(
+    		ActionChoiceConstant.ADMIN_DELETE, ActionChoiceConstant.ADMIN_UPDATE,
+    		ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,ActionChoiceConstant.CHEF_DISCARD_ITEM
+    		));
     public static ClientInputHandler getInstance() {
         if(clientInputHandler == null) {
         	clientInputHandler = new ClientInputHandler();
@@ -26,23 +39,17 @@ public class ClientInputHandler {
     private ClientInputHandler() {
         this.operations = new Hashtable<>();
         keyboardInput = new Scanner(System.in);
-        //this.userInput = new String[] {};
     }
-    public void processArguments(Hashtable<String, Object> arguments) throws InvalidArgumentException{
+    public boolean processArguments(Hashtable<String, Object> arguments) throws InvalidArgumentException{
     	this.userInput = arguments;
-//    	Menu itemMenu = (Menu) arguments.get(ActionChoiceConstant.ADMIN_ADD);
-//		System.out.println(itemMenu.getName());
-//    	UserWrapper userToAuthentaicate = arguments.get()
-//        if(userInput.get <= 0) {
-//            throw new InvalidArgumentException("Cannot proceed, no arguments passed");
-//        }
-//        else if(userInput.length > 0){
-//            for(int index = 1; index < userInput.length; index += 1) {
-//            	if(userInput[index].trim().isEmpty()) {
-//            		throw new InvalidArgumentException("Cannot proceed, no inputs given");
-//            	}
-//            }
-//        }
+    	boolean isInputValid = true;
+    	if(actionsToValidate.contains(userInput.keySet().toArray()[0])) {
+    		String role = ((String) userInput.keySet().toArray()[0]).split(":")[0];
+    		final Helper helper = HelperFactory.getInstance(role);
+    		isInputValid = helper.validateInput(userInput);
+    		return isInputValid;
+    	}
+    	return isInputValid;
     }
 
     public void processOperation() {

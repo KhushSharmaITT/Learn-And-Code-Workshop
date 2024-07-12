@@ -33,11 +33,11 @@ public class UserActionFactory {
 		actionRegistry.put(ActionChoiceConstant.EMPLOYEE_UPDATE_PROFILE,"com.action.ManageEmployeeAction");
 	}
 	// argument name should be changed.
-	public static Action getInstance(String protocolFormat) throws  ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {
+	public static Action getInstance(String userActionChoice) throws  ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidOperationException {
 		Action action = null;
-		String className = actionRegistry.get(protocolFormat);
+		String className = actionRegistry.get(userActionChoice);
 			if(className == null || className == "") { //error msg should be changed.
-				throw new InvalidOperationException(ErrorMessageConstant.NO_CONTROLLER_EXISTS +" : "+protocolFormat);// todo - no action exist.
+				throw new InvalidOperationException(ErrorMessageConstant.NO_ACTION_FOUND +" : "+userActionChoice);// todo - no action exist.
 			}
 			Class<?> dipatcherClass = Class.forName(className);
 			Constructor<?> constructor = dipatcherClass.getDeclaredConstructor();

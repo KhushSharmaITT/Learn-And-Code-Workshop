@@ -1,6 +1,5 @@
 package com.service;
 
-import com.payload.FeedbackPayload;
 import com.repository.DiscardItemRepository;
 import com.repository.FeedbackRepository;
 
@@ -15,11 +14,8 @@ import java.util.List;
 import com.console.ConsoleService;
 import com.exception.DuplicateDataException;
 import com.google.gson.reflect.TypeToken;
-import com.model.ChefRecommendation;
 import com.model.DiscardItem;
 import com.model.Feedback;
-import com.model.Menu;
-import com.model.VotedItem;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
 import com.utility.core.UserActionWrapper;
@@ -81,20 +77,6 @@ public class FeedbackService {
 		jsonWrapper.setPrettyFormat(true);
         repository = new FeedbackRepository<>();
 	}
-
-//	public float analyzeSentiment(String sentiment) {
-//
-//        switch (sentiment.toLowerCase()) {
-//            case "positive":
-//                return 1.0f;
-//            case "neutral":
-//                return 0.5f;
-//            case "negative":
-//                return -1.0f;
-//            default:
-//                return 0.0f;
-//        }
-//	}
 
 	public Feedback getUserFeedback() {
 		Feedback userFeedback = new Feedback();
@@ -204,7 +186,7 @@ public class FeedbackService {
 		return String.valueOf(rowSaved);
 	}
 
-	public String viewDiscardedItem() throws SQLException {
+	public List<DiscardItem> viewDiscardedItem() throws SQLException {
 		List<DiscardItem> discardedItemList = new ArrayList<>();
 		List<Feedback> itemFeedbacks = new ArrayList<>();
 		List<Feedback> feedbacksToUpdate = new ArrayList<>();
@@ -231,19 +213,19 @@ public class FeedbackService {
 		DiscardItemRepository<DiscardItem> discardItemRepository = new DiscardItemRepository<>();
 		discardItemRepository.save(discardedItemList);
 		
-		StringBuilder result = new StringBuilder();
-		result.append(String.format("%-10s %-20s %-10s%n", "Menu ID", "MenuItem", "Average Rating"));
-		result.append("---------------------------------------\n");
-		//System.out.println(menuList);
-		for (DiscardItem discardItem : discardedItemList) {
-	        result.append(String.format("%-10d %-20s %-10.2f%n",
-	        		discardItem.getMenuId(),
-	        		discardItem.getItemName(),
-	        		discardItem.getAverageRating()
-	        ));
-	    }
-		System.out.println(result.toString());
-	    return result.toString();
+//		StringBuilder result = new StringBuilder();
+//		result.append(String.format("%-10s %-20s %-10s%n", "Menu ID", "MenuItem", "Average Rating"));
+//		result.append("---------------------------------------\n");
+//		//System.out.println(menuList);
+//		for (DiscardItem discardItem : discardedItemList) {
+//	        result.append(String.format("%-10d %-20s %-10.2f%n",
+//	        		discardItem.getMenuId(),
+//	        		discardItem.getItemName(),
+//	        		discardItem.getAverageRating()
+//	        ));
+//	    }
+//		System.out.println(result.toString());
+	    return discardedItemList;
 	}
 
 	private void updateFeedbacks(List<Feedback> feedbacksToUpdate) throws SQLException {

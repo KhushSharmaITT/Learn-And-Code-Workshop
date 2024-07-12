@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import com.model.DiscardItem;
+import com.model.Menu;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
@@ -24,7 +25,7 @@ public class DiscardItemFeedbackPayloadHelper<T> implements Payload<T> {
 	}
 	
 	@Override
-	public T getPayload() {
+	public T getRequestPayload() {
 		Type type = new TypeToken<UserActionWrapper<DiscardItem>>() {}.getType();
 		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<DiscardItem>> jsonWrapper = new JsonWrapper<>(type);
@@ -44,8 +45,23 @@ public class DiscardItemFeedbackPayloadHelper<T> implements Payload<T> {
 	}
 
 	@Override
-	public void setPayload(T Entity) {
-		// TODO Auto-generated method stub
+	public T getResponsePayload() {
+		Type type = new TypeToken<UserActionWrapper<DiscardItem>>() {}.getType();
+		System.out.println("In menu get payload");
+		JsonWrapper<UserActionWrapper<DiscardItem>> jsonWrapper = new JsonWrapper<>(type);
+        jsonWrapper.setPrettyFormat(true);
+		try {
+			responseWrapper = new ResponseWrapper();
+			responseWrapper.jsonString = jsonWrapper.convertIntoJson(getDiscardItemPayload());
+			responseWrapper.protocolFormat = ProtocolConstant.JSON;
+			responseWrapper.exception = null;
+		}
+		catch(Exception issue) {
+			requestWrapper.jsonString = null;
+			requestWrapper.exception = issue;
+		}
+		System.out.println("32 transmission"+requestWrapper);
+		return (T) responseWrapper;
 
 	}
 

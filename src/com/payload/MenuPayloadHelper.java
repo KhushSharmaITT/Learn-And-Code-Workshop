@@ -18,7 +18,7 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 	private ResponseWrapper responseWrapper;
 	private Hashtable<String, Object> userInput;
 
-	public MenuPayloadHelper(Hashtable<String, Object> userInput) {
+	public MenuPayloadHelper(Hashtable<String, Object> userInput) {  // pass only the useractionwrapper object in constructor.
 		this.userInput = userInput;
 	}
 
@@ -27,7 +27,7 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 	}
 
 	@Override
-	public T getPayload() {
+	public T getRequestPayload() {
 		Type type = new TypeToken<UserActionWrapper<Menu>>() {}.getType();
 		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<Menu>> jsonWrapper = new JsonWrapper<>(type);
@@ -48,16 +48,34 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 	}
 
 	@Override
-	public void setPayload(T Entity) {
-		// TODO Auto-generated method stub
-
+	public T getResponsePayload() {
+		Type type = new TypeToken<UserActionWrapper<Menu>>() {}.getType();
+		System.out.println("In menu get payload");
+		JsonWrapper<UserActionWrapper<Menu>> jsonWrapper = new JsonWrapper<>(type);
+        jsonWrapper.setPrettyFormat(true);
+		try {
+			responseWrapper = new ResponseWrapper();
+			responseWrapper.jsonString = jsonWrapper.convertIntoJson(getMenuPayload());
+			responseWrapper.protocolFormat = ProtocolConstant.JSON;
+			responseWrapper.exception = null;
+		}
+		catch(Exception issue) {
+			requestWrapper.jsonString = null;
+			requestWrapper.exception = issue;
+		}
+		System.out.println("32 transmission"+requestWrapper);
+		return (T) responseWrapper;
 	}
 
 	private UserActionWrapper<Menu> getMenuPayload() {
 		System.out.println("In menu get menu payload");
 		//MenuPayload menuPayload = null;
 		if(ActionChoiceConstant.ADMIN_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_RECOMMENDATION == userInput.keySet().toArray()[0] || ActionChoiceConstant.CHEF_VIEW_VOTED_REPORT == userInput.keySet().toArray()[0]) {
+			//this needs to change.
 			return null;
+		}
+		else if(ActionChoiceConstant.ADMIN_VIEW_RESPONSE == userInput.keySet().toArray()[0]) {
+			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.ADMIN_VIEW_RESPONSE);
 		}
 		else if(ActionChoiceConstant.ADMIN_ADD == userInput.keySet().toArray()[0]) {
 			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.ADMIN_ADD);
