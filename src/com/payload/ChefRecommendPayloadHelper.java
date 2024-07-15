@@ -2,14 +2,9 @@ package com.payload;
 
 import java.lang.reflect.Type;
 import java.util.Hashtable;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import com.model.ChefRecommendation;
-import com.model.DiscardItem;
-import com.model.Menu;
-import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
@@ -43,7 +38,6 @@ public class ChefRecommendPayloadHelper<T> implements Payload<T> {
 		}
 		System.out.println("32 transmission"+requestWrapper);
 		return (T) requestWrapper;
-		//return null;
 	}
 
 	@Override
@@ -68,11 +62,12 @@ public class ChefRecommendPayloadHelper<T> implements Payload<T> {
 	}
 	
 	private UserActionWrapper<ChefRecommendation> getChefRecommendationPayload() {
-		System.out.println("In menu get menu payload");
-		if(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION == userInput.keySet().toArray()[0]) {
-			return (UserActionWrapper<ChefRecommendation>)userInput.get(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION);
-	}
-		return null;
+		String userActionChoice = (String) userInput.keySet().toArray()[0];
+		return (UserActionWrapper<ChefRecommendation>)userInput.get(userActionChoice);
+//		if(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION == userInput.keySet().toArray()[0]) {
+//			return (UserActionWrapper<ChefRecommendation>)userInput.get(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION);
+//	}
+		//return null;
 	}
 
 }

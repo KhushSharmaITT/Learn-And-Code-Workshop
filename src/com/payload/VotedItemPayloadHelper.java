@@ -2,11 +2,8 @@ package com.payload;
 
 import java.lang.reflect.Type;
 import java.util.Hashtable;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import com.model.Menu;
 import com.model.VotedItem;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
@@ -28,7 +25,6 @@ public class VotedItemPayloadHelper<T> implements Payload<T> {
 	@Override
 	public T getRequestPayload() {
 		Type type = new TypeToken<UserActionWrapper<VotedItem>>() {}.getType();
-		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<VotedItem>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
@@ -41,9 +37,7 @@ public class VotedItemPayloadHelper<T> implements Payload<T> {
 			requestWrapper.jsonString = null;
 			requestWrapper.exception = issue;
 		}
-		System.out.println("32 transmission"+requestWrapper);
 		return (T) requestWrapper;
-		//return null;
 	}
 	
 	@Override
@@ -61,7 +55,6 @@ public class VotedItemPayloadHelper<T> implements Payload<T> {
 			requestWrapper.jsonString = null;
 			requestWrapper.exception = issue;
 		}
-		System.out.println("32 transmission"+requestWrapper);
 		return (T) responseWrapper;
 	}
 	

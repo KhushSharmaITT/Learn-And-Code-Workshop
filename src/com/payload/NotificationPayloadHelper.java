@@ -5,7 +5,6 @@ import java.util.Hashtable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import com.model.Menu;
 import com.model.Notification;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;

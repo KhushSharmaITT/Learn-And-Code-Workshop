@@ -26,7 +26,6 @@ public class UserProfilePayloadHelper<T> implements Payload<T> {
 	@Override
 	public T getRequestPayload() {
 		Type type = new TypeToken<UserActionWrapper<UserProfile>>() {}.getType();
-		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<UserProfile>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
@@ -46,7 +45,6 @@ public class UserProfilePayloadHelper<T> implements Payload<T> {
 	@Override
 	public T getResponsePayload() {
 		Type type = new TypeToken<UserActionWrapper<UserProfile>>() {}.getType();
-		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<UserProfile>> jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
 		try {
@@ -64,7 +62,6 @@ public class UserProfilePayloadHelper<T> implements Payload<T> {
 	}
 	
 	private UserActionWrapper<UserProfile> getUserProfilePayload() {
-		System.out.println("In menu get menu payload");
 		 if(ActionChoiceConstant.EMPLOYEE_UPDATE_PROFILE == userInput.keySet().toArray()[0]) {
 			 return (UserActionWrapper<UserProfile>)userInput.get(ActionChoiceConstant.EMPLOYEE_UPDATE_PROFILE);
 		}

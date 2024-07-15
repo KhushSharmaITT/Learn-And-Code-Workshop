@@ -22,10 +22,6 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 		this.userInput = userInput;
 	}
 
-	public MenuPayloadHelper() {
-		// TODO Auto-generated constructor stub 
-	}
-
 	@Override
 	public T getRequestPayload() {
 		Type type = new TypeToken<UserActionWrapper<Menu>>() {}.getType();
@@ -88,7 +84,6 @@ public class MenuPayloadHelper<T> implements Payload<T> {
 		} 
 		else
 			return (UserActionWrapper<Menu>)userInput.get(ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU);
-		//return menuPayload;
 	}
 
 }

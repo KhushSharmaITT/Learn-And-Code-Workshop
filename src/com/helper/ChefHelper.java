@@ -39,7 +39,7 @@ public class ChefHelper implements Helper{
 
 	public UserActionWrapper<Menu> getMenuResponse(ResponseWrapper responseWrapper) {
 		UserActionWrapper<Menu> serverResponseWrapper = jsonWrapper.convertIntoObject(responseWrapper.jsonString);
-		return serverResponseWrapper;//lets see
+		return serverResponseWrapper;
 	}
 
 	public void viewMenu(List<Menu> menu) {
@@ -47,7 +47,6 @@ public class ChefHelper implements Helper{
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
 		result.append("-------------------------------------------------------------------------------------\n");
-		//System.out.println(menuList);
 		for (Menu menuItem : menuItems) {
 	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
 	        menuItem.getMenuId(),
@@ -125,7 +124,6 @@ public class ChefHelper implements Helper{
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("%-10s %-20s %-10s%n", "Menu ID", "MenuItem", "Average Rating"));
 		result.append("---------------------------------------\n");
-		//System.out.println(menuList);
 		for (DiscardItem discardItem : discardItems) {
 	        result.append(String.format("%-10d %-20s %-10.2f%n",
 	        		discardItem.getMenuId(),

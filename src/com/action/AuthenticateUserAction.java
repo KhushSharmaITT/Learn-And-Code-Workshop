@@ -33,8 +33,6 @@ public class AuthenticateUserAction implements Action{
 
 	@Override
 	public String handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException {
-
-    	System.out.println("yeahhhhhh finally");
     	final String dataToProcess = data.split("=")[0].trim();
     	final Hashtable<String, Object> outputToProcess = new Hashtable<>();
     	RequestWrapper requestWrapper = jsonWrapper.convertIntoObject(dataToProcess);
@@ -43,7 +41,6 @@ public class AuthenticateUserAction implements Action{
     	outputToProcess.put(ActionChoiceConstant.AUTHENTICATE_USER, userResponseWrapper);
     	this.userPayloadHelper = new UserPayloadHelper<>(outputToProcess); 
     	final ResponseWrapper responseWrapper = userPayloadHelper.getResponsePayload();
-    	//userPayloadHelper.setPayload(this.userResponsePayload);
     	JsonWrapper<ResponseWrapper> jsonResponseWrapper = new JsonWrapper<>(ResponseWrapper.class);
     	jsonResponseWrapper.setPrettyFormat(true);
         String jsonString = jsonResponseWrapper.convertIntoJson(responseWrapper);
@@ -53,8 +50,6 @@ public class AuthenticateUserAction implements Action{
     private UserWrapper prepareUserResponse(UserPayload userRequestPayload) throws SQLException, InvalidDataException, UserNotFoundException {
     	UserWrapper userToAuthenticate = userRequestPayload.getUserWrapperDetails();
     	userToAuthenticate = userService.getUserWithRole(userToAuthenticate);
-    	//userToAuthenticate.setRole(userRole);
-    	//userResponsePayload.setUserWrapperDetails(userToAuthenticate);
     	return userToAuthenticate;
     }
 }

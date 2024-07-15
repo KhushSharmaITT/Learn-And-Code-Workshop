@@ -42,7 +42,6 @@ public class UserPayloadHelper<T> implements Payload<T>{
 	public T getResponsePayload() {
 		JsonWrapper<UserPayload> jsonWrapper = new JsonWrapper<>(UserPayload.class);
         jsonWrapper.setPrettyFormat(true);
-		System.out.println("IN setPayload");
 		responseWrapper = new ResponseWrapper();
 		try {
 			responseWrapper.jsonString = jsonWrapper.convertIntoJson(getUserPayload());
@@ -53,14 +52,9 @@ public class UserPayloadHelper<T> implements Payload<T>{
 			responseWrapper.jsonString = null;
 			responseWrapper.exception = issue;
 		}
-		System.out.println("32 transmission "+responseWrapper.jsonString);
-		System.out.println("32 transmission "+responseWrapper.protocolFormat);
 		return (T) responseWrapper;
 
 	}
-//	public ResponseWrapper getResponseWrapper() {
-//		return this.responseWrapper;
-//	}
 
 	private UserPayload getUserPayload() {
 		UserPayload userPayload = new UserPayload();

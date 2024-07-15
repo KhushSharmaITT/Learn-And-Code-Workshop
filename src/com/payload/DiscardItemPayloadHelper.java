@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import com.model.DiscardItem;
-import com.model.Menu;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;
@@ -66,19 +65,22 @@ public class DiscardItemPayloadHelper<T> implements Payload<T> {
 	}
 
 	private UserActionWrapper<DiscardItem> getDiscardItemPayload() {
-		if(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST == userInput.keySet().toArray()[0]) {
+		String userActionChoice = (String) userInput.keySet().toArray()[0];
+		
+		if(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST == userActionChoice) {
 			return null;
 		}
-		else if(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST_RESPONSE == userInput.keySet().toArray()[0]) {
-			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST_RESPONSE);
-		}
-		else if(ActionChoiceConstant.CHEF_DISCARD_ITEM == userInput.keySet().toArray()[0]) {
-			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_DISCARD_ITEM);
-		}
-		else if(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK == userInput.keySet().toArray()[0]) {
-			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK);
-		}
-		return null;
+		return (UserActionWrapper<DiscardItem>)userInput.get(userActionChoice);
+//		else if(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST_RESPONSE == userInput.keySet().toArray()[0]) {
+//			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_VIEW_DISCARD_MENU_ITEM_LIST_RESPONSE);
+//		}
+//		else if(ActionChoiceConstant.CHEF_DISCARD_ITEM == userInput.keySet().toArray()[0]) {
+//			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_DISCARD_ITEM);
+//		}
+//		else if(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK == userInput.keySet().toArray()[0]) {
+//			return (UserActionWrapper<DiscardItem>)userInput.get(ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK);
+//		}
+//		return null;
 		
 	}
 }

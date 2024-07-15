@@ -25,32 +25,36 @@ import com.utility.user.UserWrapper;
 public class AdminController implements Controller{
 
 	private JsonWrapper<ResponseWrapper> jsonWrapper;
+	private List<Menu> menuItems;
+	private MenuService menuService;
+	private UserActionWrapper<Menu> userActionWrapper;
+	private Hashtable<String, Object> inputsToProcess;
+	private ClientInputHandler clientInputHandler;
+	private UserWrapper userWrapper;
+	private boolean isMenuIdValid;
     public AdminController() {
     	this.jsonWrapper = new JsonWrapper<>(ResponseWrapper.class);
         this.jsonWrapper.setPrettyFormat(true);
+        menuService = new MenuService();
+        clientInputHandler = ClientInputHandler.getInstance();
     }
 	@Override
 	public void handleAction(String data) throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException, UnknownHostException, IOException {
 		ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(data);
     	UserPayload userResponsePayload = getUserDetails(responseWrapper);
-		processAdminAction(userResponsePayload.getUserWrapperDetails());
+    	this.userWrapper = userResponsePayload.getUserWrapperDetails();
+		processAdminAction();
 
 	}
 	
 	private UserPayload getUserDetails(ResponseWrapper responseWrapper) {
-		JsonWrapper<UserPayload> jsonWrapper;
-	    jsonWrapper = new JsonWrapper<>(UserPayload.class);
+		JsonWrapper<UserPayload> jsonWrapper = new JsonWrapper<>(UserPayload.class);
 	    jsonWrapper.setPrettyFormat(true);
 	    UserPayload userResponsePayload = jsonWrapper.convertIntoObject(responseWrapper.jsonString);
 		return userResponsePayload;
 	}
 
-	private void processAdminAction(UserWrapper userWrapper) throws InvalidArgumentException, UnknownHostException, IOException {
-		final MenuService menuService = new MenuService();
-		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
-		Hashtable<String, Object> inputsToProcess;
-		UserActionWrapper<Menu> userActionWrapper = null;
-		List<Menu> menuItems;
+	private void processAdminAction() throws InvalidArgumentException, UnknownHostException, IOException {
 		String actions = "Please choose an option\n"+
 	                      "1. Add Item\n"+
 				          "2. View Menu\n"+
@@ -61,76 +65,20 @@ public class AdminController implements Controller{
 
         String choice="";
         boolean endProcess = false;
-        boolean isMenuIdValid;
         do {
               choice = ConsoleService.getUserInput(actions);
-              Menu item;
-            // Perform action based on user choice
             switch (choice) {
                 case "1":
-                	menuItems = new ArrayList<>();
-                	item = menuService.addItem();
-                	menuItems.add(item);
-                	
-                	userActionWrapper = new UserActionWrapper<Menu>();
-                	userActionWrapper.setActionData(menuItems);
-                	userActionWrapper.setActionToPerform("Admin:add");
-                	
-                    inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:add", userActionWrapper);
-                	clientInputHandler.processArguments(inputsToProcess);
-            	    clientInputHandler.processOperation();
-            	    
-                    break;
+                	addItem();
+            	    break;
                 case "2":
-                	inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:view", "viewMenu");
-                	clientInputHandler.processArguments(inputsToProcess);
-            	    clientInputHandler.processOperation();
-            	    final ClientHandler clientHandler = ClientHandler.getInstance();
-                    String datafromServer = clientHandler.getDataFromServer();
-                    if(!datafromServer.isBlank()) {
-                    	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
-                    	final AdminHelper helper = AdminHelper.getInstance();
-                    	UserActionWrapper<Menu> serverResponseWrapper = helper.getServerResponse(responseWrapper);
-                    	helper.viewMenu(serverResponseWrapper.getActionData());
-                    }
-                	//userInputAction = new String[] {"View_Menu","Admin","Database"};
+                	viewMenu();
                     break;
                 case "3":
-                	menuItems = new ArrayList<>();
-                    item = menuService.updateItem();
-                    menuItems.add(item);
-                    
-                    userActionWrapper = new UserActionWrapper<Menu>();
-                	userActionWrapper.setActionData(menuItems);
-                	userActionWrapper.setActionToPerform("Admin:update");
-                	userActionWrapper.setUserWrapper(userWrapper);
-                	
-                	inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:update", userActionWrapper);
-                	isMenuIdValid = clientInputHandler.processArguments(inputsToProcess);
-                	if(isMenuIdValid) {
-                		clientInputHandler.processOperation();
-                	}
-            	    //userInputAction = new String[] {"Update_Menu","Admin","Database"};
+                	updateItem();
                     break;
                 case "4":
-                	menuItems = new ArrayList<>();
-                	item = menuService.getDeleteItem();
-                	menuItems.add(item);
-                	
-                	userActionWrapper = new UserActionWrapper<Menu>();
-                	userActionWrapper.setActionData(menuItems);
-                	userActionWrapper.setActionToPerform("Admin:delete");
-                	userActionWrapper.setUserWrapper(userWrapper);
-                	
-                	inputsToProcess = new Hashtable<>();
-                	inputsToProcess.put("Admin:delete", userActionWrapper);
-                	isMenuIdValid = clientInputHandler.processArguments(inputsToProcess);
-                	if(isMenuIdValid) {
-                		clientInputHandler.processOperation();
-                	}
+                	deleteItem();
                     break;
                 case "5":
                 	endProcess = true;
@@ -140,10 +88,76 @@ public class AdminController implements Controller{
                     System.out.println("Invalid choice. Please try again.");
             }
 
-            System.out.println(); // Print a newline for better readability
+            System.out.println(); 
         } while (!endProcess);
-        //return inputsToProcess;
 
 	}
+	
+	private void addItem() throws InvalidArgumentException {
+		
+		menuItems = new ArrayList<>();
+		Menu item = menuService.addItem();
+    	menuItems.add(item);
+    	
+    	userActionWrapper = new UserActionWrapper<Menu>();
+    	userActionWrapper.setActionData(menuItems);
+    	userActionWrapper.setActionToPerform("Admin:add");
+    	
+        inputsToProcess = new Hashtable<>();
+    	inputsToProcess.put("Admin:add", userActionWrapper);
+    	clientInputHandler.processArguments(inputsToProcess);
+	    clientInputHandler.processOperation();
+	}
+	
+	private void viewMenu() throws InvalidArgumentException, UnknownHostException, IOException {
+		inputsToProcess = new Hashtable<>();
+    	inputsToProcess.put("Admin:view", "viewMenu");
+    	clientInputHandler.processArguments(inputsToProcess);
+	    clientInputHandler.processOperation();
+	    final ClientHandler clientHandler = ClientHandler.getInstance();
+        String datafromServer = clientHandler.getDataFromServer();
+        if(!datafromServer.isBlank()) {
+        	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
+        	final AdminHelper helper = AdminHelper.getInstance();
+        	UserActionWrapper<Menu> serverResponseWrapper = helper.getServerResponse(responseWrapper);
+        	helper.viewMenu(serverResponseWrapper.getActionData());
+        }
+	}
+	
+	private void updateItem() throws InvalidArgumentException {
+		menuItems = new ArrayList<>();
+		Menu item = menuService.updateItem();
+        menuItems.add(item);
+        
+        userActionWrapper = new UserActionWrapper<Menu>();
+    	userActionWrapper.setActionData(menuItems);
+    	userActionWrapper.setActionToPerform("Admin:update");
+    	userActionWrapper.setUserWrapper(userWrapper);
+    	
+    	inputsToProcess = new Hashtable<>();
+    	inputsToProcess.put("Admin:update", userActionWrapper);
+    	isMenuIdValid = clientInputHandler.processArguments(inputsToProcess);
+    	if(isMenuIdValid) {
+    		clientInputHandler.processOperation();
+    	}
+	}
 
+	private void deleteItem() throws InvalidArgumentException {
+		menuItems = new ArrayList<>();
+		Menu item = menuService.getDeleteItem();
+    	menuItems.add(item);
+    	
+    	userActionWrapper = new UserActionWrapper<Menu>();
+    	userActionWrapper.setActionData(menuItems);
+    	userActionWrapper.setActionToPerform("Admin:delete");
+    	userActionWrapper.setUserWrapper(userWrapper);
+    	
+    	inputsToProcess = new Hashtable<>();
+    	inputsToProcess.put("Admin:delete", userActionWrapper);
+    	isMenuIdValid = clientInputHandler.processArguments(inputsToProcess);
+    	if(isMenuIdValid) {
+    		clientInputHandler.processOperation();
+    	}
+	}
+	
 }

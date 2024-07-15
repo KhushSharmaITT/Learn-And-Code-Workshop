@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.json.simple.parser.ParseException;
@@ -12,33 +11,23 @@ import org.json.simple.parser.ParseException;
 import com.exception.DataSerializationException;
 import com.exception.InvalidArgumentException;
 import com.factory.HelperFactory;
-import com.helper.AdminHelper;
 import com.helper.Helper;
-import com.model.Menu;
 import com.utility.ActionChoiceConstant;
-import com.utility.core.UserActionWrapper;
-import com.utility.user.UserWrapper;
 
 public class ClientInputHandler {
 
-	private Hashtable<String, String> operations;
 	private Hashtable<String,Object> userInput;
     private static ClientInputHandler clientInputHandler;
-    private Scanner keyboardInput;
     private Set<String> actionsToValidate = new HashSet<String>(Arrays.asList(
     		ActionChoiceConstant.ADMIN_DELETE, ActionChoiceConstant.ADMIN_UPDATE,
-    		ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,ActionChoiceConstant.CHEF_DISCARD_ITEM
+    		ActionChoiceConstant.CHEF_ROLLOUT_NEXT_DAY_MENU,ActionChoiceConstant.CHEF_DISCARD_ITEM,
+    		ActionChoiceConstant.CHEF_GET_DETAILED_FEEDBACK, ActionChoiceConstant.EMPLOYEE_VOTE_ITEMS
     		));
     public static ClientInputHandler getInstance() {
         if(clientInputHandler == null) {
         	clientInputHandler = new ClientInputHandler();
         }
         return clientInputHandler;
-    }
-
-    private ClientInputHandler() {
-        this.operations = new Hashtable<>();
-        keyboardInput = new Scanner(System.in);
     }
     public boolean processArguments(Hashtable<String, Object> arguments) throws InvalidArgumentException{
     	this.userInput = arguments;
@@ -61,6 +50,7 @@ public class ClientInputHandler {
         } catch (ParseException|InvalidArgumentException|DataSerializationException issue) {
             System.out.println("Data invalid : "+issue.getLocalizedMessage());
         }catch (Exception issue) {
+        	//issue.printStackTrace();
             System.out.println("Failed to start client : "+issue.getLocalizedMessage());
         }
     } 

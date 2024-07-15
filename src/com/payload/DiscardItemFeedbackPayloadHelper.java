@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import com.model.DiscardItem;
-import com.model.Menu;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.core.JsonWrapper;

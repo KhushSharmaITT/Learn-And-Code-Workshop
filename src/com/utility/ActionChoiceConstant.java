@@ -20,6 +20,7 @@ public class ActionChoiceConstant {
 	public static final String CHEF_DISCARD_ITEM = "Chef:discard_item";
 	public static final String CHEF_GET_DETAILED_FEEDBACK = "Chef:get_detailed_feedback";
 	public static final String EMPLOYEE_VIEW_CHEF_RECOMMENDATION = "Employee:view_chefRecommendations";
+	public static final String EMPLOYEE_VIEW_CHEF_RECOMMENDATION_RESPONSE = "Employee:view_chefRecommendations_response";
 	public static final String EMPLOYEE_VOTE_ITEMS = "Employee:voteItem";
 	public static final String EMPLOYEE_FEEDBACK = "Employee:feedback";
 	public static final String EMPLOYEE_VIEW_NOTIFICATION = "Employee:view_notification";

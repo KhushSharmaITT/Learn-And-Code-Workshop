@@ -2,7 +2,6 @@ package com.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
@@ -21,16 +20,7 @@ import com.exception.UserNotFoundException;
 import com.factory.ControllerFactory;
 import com.factory.DataSerializerFactory;
 import com.factory.PayloadFactory;
-import com.payload.ChefRecommendPayloadHelper;
-import com.payload.DiscardItemFeedbackPayloadHelper;
-import com.payload.DiscardItemPayloadHelper;
-import com.payload.FeedbackPayloadHelper;
-import com.payload.MenuPayloadHelper;
-import com.payload.NotificationPayloadHelper;
 import com.payload.Payload;
-import com.payload.UserPayloadHelper;
-import com.payload.UserProfilePayloadHelper;
-import com.payload.VotedItemPayloadHelper;
 import com.utility.ActionChoiceConstant;
 import com.utility.ProtocolConstant;
 import com.utility.SocketHelper;
@@ -73,15 +63,10 @@ public class ClientHandler {
     	final DataSerializer serializer = DataSerializerFactory.getInstance("json");
     	String actionName = inputHandler.getActionName();
     	CommunicationProtocol protocol = null;
-    	
     	Payload<RequestWrapper> payload = PayloadFactory.getInstance(actionName, userInputs);
 		final RequestWrapper requestWrapper = payload.getRequestPayload();
         protocol = clientService.createRequestCommunicationProtocol(requestWrapper);
-
         final PrintWriter socketWriter = socketHelper.getWriter(client);
-        System.out.println(serializer.serialize(protocol));
-        String requestedData = serializer.serialize(protocol);
-        System.out.println(requestedData);
         socketWriter.write("type=json");
         socketWriter.write("\n");
         String serializeString = serializer.serialize(protocol);
@@ -103,7 +88,6 @@ public class ClientHandler {
         while(clientInput.ready()) {
             protocolBody.append(clientInput.readLine());
         }
-        System.out.println(protocolBody);
         final DataSerializer serializer = DataSerializerFactory.getInstance(protocolFormat);
         final CommunicationProtocol responseProtocol = serializer.deserialize(protocolBody.toString());
         processServerResponse(responseProtocol);

@@ -44,7 +44,6 @@ public class AdminHelper implements Helper{
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
 		result.append("-------------------------------------------------------------------------------------\n");
-		//System.out.println(menuList);
 		for (Menu menuItem : menuItems) {
 	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
 	        menuItem.getMenuId(),

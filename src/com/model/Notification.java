@@ -2,11 +2,17 @@ package com.model;
 
 import java.sql.Timestamp;
 
-public class Notification {
+import com.google.gson.annotations.Expose;
 
+public class Notification {
+	
+	@Expose
 	private int id;
+	@Expose
 	private int menuId;
+	@Expose
 	private String message;
+	@Expose
     private Timestamp createdDate;
 	public int getId() {
 		return id;

@@ -24,7 +24,6 @@ import com.service.FeedbackService;
 import com.service.UserService;
 import com.service.VotedItemService;
 import com.utility.core.JsonWrapper;
-import com.utility.core.RequestWrapper;
 import com.utility.core.ResponseWrapper;
 import com.utility.core.UserActionWrapper;
 import com.utility.user.UserWrapper;
@@ -32,18 +31,29 @@ import com.utility.user.UserWrapper;
 public class EmployeeController implements Controller{ 
 
 	private JsonWrapper<ResponseWrapper> jsonWrapper;
+	private Hashtable<String, Object> inputsToProcess;
+	private ClientInputHandler clientInputHandler;
+	private ClientHandler clientHandler;
+	private UserWrapper userWrapper;
+	private VotedItemService votedItemService;
+	private FeedbackService feedbackService;
+	private EmployeeHelper helper;
+	private boolean isMenuIdValid;
     public EmployeeController() {
     	this.jsonWrapper = new JsonWrapper<>(ResponseWrapper.class);
         this.jsonWrapper.setPrettyFormat(true);
+        clientInputHandler =  ClientInputHandler.getInstance();
+        votedItemService = new VotedItemService();
+        feedbackService = new FeedbackService();
+        helper = EmployeeHelper.getInstance();
     }
 	@Override
 	public void handleAction(String data)
 			throws InvalidDataException, SQLException, UserNotFoundException, InvalidArgumentException, UnknownHostException, IOException {
     	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(data);
     	UserPayload userResponsePayload = getUserDetails(responseWrapper);
-        processEmployeeAction(userResponsePayload.getUserWrapperDetails());
-		// TODO Auto-generated method stub
-		
+    	this.userWrapper = userResponsePayload.getUserWrapperDetails();
+        processEmployeeAction();		
 	}
 
 	private UserPayload getUserDetails(ResponseWrapper responseWrapper) {
@@ -53,12 +63,7 @@ public class EmployeeController implements Controller{
 	    UserPayload userResponsePayload = jsonWrapper.convertIntoObject(responseWrapper.jsonString);
 		return userResponsePayload;
 	}
-	private void processEmployeeAction(UserWrapper userWrapper) throws InvalidArgumentException, UnknownHostException, IOException {
-		// TODO Auto-generated method stub
-		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
-		final VotedItemService votedItemService = new VotedItemService();
-	    FeedbackService feedbackService;
-		Hashtable<String, Object> inputsToProcess;
+	private void processEmployeeAction() throws InvalidArgumentException, UnknownHostException, IOException {
 		String actions = "Please choose an option\n"+
 		                 "1. View Notification\n"+
 				         "2. View Menu\n"+
@@ -75,83 +80,22 @@ public class EmployeeController implements Controller{
 			choice = ConsoleService.getUserInput(actions);
 		switch (choice) {
 		case "1":
-			inputsToProcess = new Hashtable<>();
-			inputsToProcess.put("Employee:view_notification", "viewNotification");
-			clientInputHandler.processArguments(inputsToProcess);
-        	clientInputHandler.processOperation();
+			viewNotification();
         	break;
 		case "2":
-			inputsToProcess = new Hashtable<>();
-        	inputsToProcess.put("Employee:view", "viewMenu");
-        	clientInputHandler.processArguments(inputsToProcess);
-    	    clientInputHandler.processOperation();
-    	    final ClientHandler clientHandler = ClientHandler.getInstance();
-            String datafromServer = clientHandler.getDataFromServer();
-            if(!datafromServer.isBlank()) {
-            	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
-            	final EmployeeHelper helper = EmployeeHelper.getInstance();
-            	UserActionWrapper<Menu> serverResponseWrapper = helper.getServerResponse(responseWrapper);
-            	helper.viewMenu(serverResponseWrapper.getActionData());
-            }
+			viewMenu();
 			break;
 		case "3":
-			UserActionWrapper<UserProfile> userActionWrapper_3 = new UserActionWrapper<>();
-			final UserService userService = new UserService();
-			inputsToProcess = new Hashtable<>();
-			List<UserProfile> userProfiles = new ArrayList<>();
-			UserProfile userProfile = userService.getUserProfile();
-			userProfile.setUserId(userWrapper.getId());
-			userProfiles.add(userProfile);
-			
-			userActionWrapper_3.setActionData(userProfiles);
-			userActionWrapper_3.setActionToPerform("Employee:updateProfile");
-			
-			inputsToProcess.put("Employee:updateProfile", userActionWrapper_3);
-        	clientInputHandler.processArguments(inputsToProcess);
-    	    clientInputHandler.processOperation();
+			updateYourProfile();
 			break;
-        	
         case "4":
-        	inputsToProcess = new Hashtable<>();
-        	UserActionWrapper<ChefRecommendation> userActionWrapper_4 = new UserActionWrapper<>();
-        	userActionWrapper_4.setUserWrapper(userWrapper);
-			userActionWrapper_4.setActionToPerform("Employee:view_chefRecommendations");
-        	inputsToProcess.put("Employee:view_chefRecommendations", userActionWrapper_4);
-        	clientInputHandler.processArguments(inputsToProcess);
-        	clientInputHandler.processOperation();
+        	viewChefsRecommendation();
         	break;
         case "5":
-        	UserActionWrapper<VotedItem> userActionWrapper = new UserActionWrapper<>();
-        	inputsToProcess = new Hashtable<>();
-        	List<VotedItem> votedItems = new ArrayList<>();
-        	VotedItem itemToVote = votedItemService.getItemToVote();
-        	itemToVote.setUserId(userWrapper.getId());
-        	votedItems.add(itemToVote);
-        	
-        	userActionWrapper.setActionData(votedItems);
-        	userActionWrapper.setActionToPerform("Employee:voteItem");
-        	
-        	inputsToProcess.put("Employee:voteItem", userActionWrapper);
-        	clientInputHandler.processArguments(inputsToProcess);
-    	    clientInputHandler.processOperation();
+        	voteForNextDayRecommendation();
         	break;
         case "6":
-        	UserActionWrapper<Feedback> userActionWrapper_2 = new UserActionWrapper<>();
-        	inputsToProcess = new Hashtable<>();
-        	List<Feedback> userFeedbacks = new ArrayList<>();
-        	feedbackService = new FeedbackService();
-        	Feedback userFeedback = new Feedback();
-        	userFeedback = feedbackService.getUserFeedback();
-        	userFeedback.setUserId(userWrapper.getId());
-        	userFeedbacks.add(userFeedback);
-        	
-        	userActionWrapper_2.setActionData(userFeedbacks);
-        	userActionWrapper_2.setActionToPerform("userFeedbacks");
-        	
-        	inputsToProcess.put("Employee:feedback", userActionWrapper_2);
-        	clientInputHandler.processArguments(inputsToProcess);
-    	    clientInputHandler.processOperation();
-        	
+        	giveFeedbackToChef();        	
             break;
         case "7":
         	endProcess = true;
@@ -160,8 +104,99 @@ public class EmployeeController implements Controller{
         default:
             System.out.println("Invalid choice. Please try again.");
 	}
-		System.out.println(); // Print a newline for better readability
+		System.out.println(); 
     } while (!endProcess);
 }
+	
+	private void viewNotification() throws InvalidArgumentException {
+		inputsToProcess = new Hashtable<>();
+		inputsToProcess.put("Employee:view_notification", "viewNotification");
+		clientInputHandler.processArguments(inputsToProcess);
+    	clientInputHandler.processOperation();
+	}
+	
+	private void viewMenu() throws InvalidArgumentException, UnknownHostException, IOException {
+		inputsToProcess = new Hashtable<>();
+    	inputsToProcess.put("Employee:view", "viewMenu");
+    	clientInputHandler.processArguments(inputsToProcess);
+	    clientInputHandler.processOperation();
+	    clientHandler = ClientHandler.getInstance();
+        String datafromServer = clientHandler.getDataFromServer();
+        if(!datafromServer.isBlank()) {
+        	ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
+        	UserActionWrapper<Menu> serverResponseWrapper = helper.getServerResponse(responseWrapper);
+        	helper.viewMenu(serverResponseWrapper.getActionData());
+        }
+	}
 
+	private void updateYourProfile() throws InvalidArgumentException {
+		UserActionWrapper<UserProfile> userActionWrapper = new UserActionWrapper<>();
+		final UserService userService = new UserService();
+		inputsToProcess = new Hashtable<>();
+		List<UserProfile> userProfiles = new ArrayList<>();
+		UserProfile userProfile = userService.getUserProfile();
+		userProfile.setUserId(userWrapper.getId());
+		userProfiles.add(userProfile);
+		
+		userActionWrapper.setActionData(userProfiles);
+		userActionWrapper.setActionToPerform("Employee:updateProfile");
+		
+		inputsToProcess.put("Employee:updateProfile", userActionWrapper);
+    	clientInputHandler.processArguments(inputsToProcess);
+	    clientInputHandler.processOperation();
+	}
+	
+	private void viewChefsRecommendation() throws InvalidArgumentException, UnknownHostException, IOException {
+		inputsToProcess = new Hashtable<>();
+    	UserActionWrapper<ChefRecommendation> userActionWrapper = new UserActionWrapper<>();
+    	userActionWrapper.setUserWrapper(userWrapper);
+    	userActionWrapper.setActionToPerform("Employee:view_chefRecommendations");
+    	inputsToProcess.put("Employee:view_chefRecommendations", userActionWrapper);
+    	clientInputHandler.processArguments(inputsToProcess);
+    	clientInputHandler.processOperation();
+    	clientHandler = ClientHandler.getInstance();
+    	String datafromServer = clientHandler.getDataFromServer();
+    	if(!datafromServer.isBlank()) {
+    		ResponseWrapper responseWrapper = jsonWrapper.convertIntoObject(datafromServer);
+    		UserActionWrapper<ChefRecommendation> userActionResponseWrapper = helper.getChefRecommendationResponse(responseWrapper);
+    		helper.viewChefRecommendation(userActionResponseWrapper.getActionData());
+    	}
+    	    
+	}
+	
+	private void voteForNextDayRecommendation() throws InvalidArgumentException {
+		UserActionWrapper<VotedItem> userActionWrapper = new UserActionWrapper<>();
+    	inputsToProcess = new Hashtable<>();
+    	List<VotedItem> votedItems = new ArrayList<>();
+    	VotedItem itemToVote = votedItemService.getItemToVote();
+    	itemToVote.setUserId(userWrapper.getId());
+    	votedItems.add(itemToVote);
+    	
+    	userActionWrapper.setActionData(votedItems);
+    	userActionWrapper.setActionToPerform("Employee:voteItem");
+    	
+    	inputsToProcess.put("Employee:voteItem", userActionWrapper);
+    	isMenuIdValid = clientInputHandler.processArguments(inputsToProcess);
+    	if(isMenuIdValid) {
+    		clientInputHandler.processOperation();
+    	}
+	}
+	
+	private void giveFeedbackToChef() throws InvalidArgumentException {
+		UserActionWrapper<Feedback> userActionWrapper = new UserActionWrapper<>();
+    	inputsToProcess = new Hashtable<>();
+    	List<Feedback> userFeedbacks = new ArrayList<>();
+    	feedbackService = new FeedbackService();
+    	Feedback userFeedback = new Feedback();
+    	userFeedback = feedbackService.getUserFeedback();
+    	userFeedback.setUserId(userWrapper.getId());
+    	userFeedbacks.add(userFeedback);
+    	
+    	userActionWrapper.setActionData(userFeedbacks);
+    	userActionWrapper.setActionToPerform("userFeedbacks");
+    	
+    	inputsToProcess.put("Employee:feedback", userActionWrapper);
+    	clientInputHandler.processArguments(inputsToProcess);
+	    clientInputHandler.processOperation();
+	}
 }
