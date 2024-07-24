@@ -2,17 +2,30 @@ package com.model;
 
 import java.sql.Timestamp;
 
+import com.google.gson.annotations.Expose;
+
 public class ChefRecommendation {
+	@Expose
 	private int id;
+	@Expose
     private int menuId;
+	@Expose
     private String menuName;
+	@Expose
     private float score;
+	@Expose
     private int voteCount;
+	@Expose
     private String preference;
+	@Expose
     private String spiceLevel;
+	@Expose
     private String cuisinePreference;
+	@Expose
     private String sweetTooth;
+	@Expose
     private String mealType;
+	@Expose
     private Timestamp createdDate;
     
 	public int getId() {

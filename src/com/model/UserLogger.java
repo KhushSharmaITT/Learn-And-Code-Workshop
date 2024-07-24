@@ -2,10 +2,16 @@ package com.model;
 
 import java.sql.Timestamp;
 
+import com.google.gson.annotations.Expose;
+
 public class UserLogger {
+	@Expose
 	private int id;
+	@Expose
     private int userId;
+	@Expose
     private String userAction;
+	@Expose
     private Timestamp dateCreated;
 
     public int getId() {

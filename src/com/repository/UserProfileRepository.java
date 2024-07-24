@@ -7,9 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.model.ChefRecommendation;
-import com.model.Feedback;
-import com.model.Menu;
 import com.model.UserProfile;
 
 public class UserProfileRepository<T> implements Repository<T> {

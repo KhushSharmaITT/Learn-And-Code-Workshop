@@ -1,21 +1,17 @@
 package com.service;
 
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.console.ConsoleService;
 import com.exception.InvalidDataException;
 import com.exception.UserNotFoundException;
-import com.google.gson.reflect.TypeToken;
-import com.model.Menu;
 import com.model.UserProfile;
 import com.payload.UserPayload;
 import com.repository.UserRepository;
 import com.utility.ErrorMessageConstant;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
-import com.utility.core.UserActionWrapper;
 import com.utility.user.UserWrapper;
 
 public class UserService {
@@ -27,9 +23,7 @@ public class UserService {
 	}
 
 	public UserPayload prepareUserPayload(RequestWrapper requestWrapper) throws InvalidDataException {
-		//final User userToAuthenticate;
 		UserPayload userPayload = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
-		//To be implemented more nicely
 		final UserWrapper userWrapper = userPayload.getUserWrapperDetails();
 			 if(userWrapper.getEmailId()== null || userWrapper.getPassword() == null) {
 				 throw new InvalidDataException(ErrorMessageConstant.INVALID_USER_DATA);
@@ -38,7 +32,6 @@ public class UserService {
 	}
 
 	public UserWrapper getUserWithRole(UserWrapper userToAuthenticate) throws SQLException, InvalidDataException, UserNotFoundException {
-		//String userRole = "";
 		final UserRepository<ResultSet> repository = new UserRepository<>();
 		ResultSet cursor = repository.find(userToAuthenticate.getEmailId());
 		if (cursor != null && cursor.next()) {

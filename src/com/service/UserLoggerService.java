@@ -14,18 +14,17 @@ import com.utility.core.UserActionWrapper;
 
 public class UserLoggerService {
 	UserLoggerRepository<UserLogger> repository;
-	List<UserLogger> userLogsToInsert;
+	LocalDateTime currentDateTime;
 	public UserLoggerService() {
 		repository = new UserLoggerRepository<>();
-		userLogsToInsert = new ArrayList<>();
-	}
+		currentDateTime = LocalDateTime.now();
+		}
 
 	public boolean checkUserLogForDiscardProcess(UserActionWrapper<DiscardItem> userActionWrapper) throws SQLException {
-		System.out.println("Usersloggerervice");
+		List<UserLogger> userLogsToInsert = new ArrayList<>();
 		List<UserLogger> userLogs = new ArrayList<>();
 		String queryToFind = "SELECT * FROM user_logger WHERE UserAction = '"+ActionChoiceConstant.CHEF_DISCARD_ITEM +"' ORDER BY DATE(Date_Created) DESC LIMIT 1";
 		userLogs = repository.findRecords(queryToFind);
-		LocalDateTime currentDateTime = LocalDateTime.now();
 		if(userLogs != null && !userLogs.isEmpty()) {
 			UserLogger userLog = userLogs.getFirst();
 			Timestamp dateCreated = userLog.getDateCreated();
@@ -33,34 +32,33 @@ public class UserLoggerService {
 			LocalDateTime durationDate = userLogDateCreated.plusDays(30);
 			
 			if (currentDateTime.isAfter(durationDate)) {
-				UserLogger newUserLog = new UserLogger();
-				newUserLog.setUserAction(ActionChoiceConstant.CHEF_DISCARD_ITEM);
-				newUserLog.setDateCreated(Timestamp.valueOf(currentDateTime));
-				newUserLog.setUserId(userActionWrapper.getUserWrapper().getId());
+				UserLogger newUserLog = prepareUserLogger(userActionWrapper.getUserWrapper().getId(),userActionWrapper.getActionToPerform());
 				userLogsToInsert.add(newUserLog);
-				createUserLogs();
+				createUserLogs(userLogsToInsert);
 				return false;
 			}else {
 				return true;
 			}
 		}
 			else {
-				UserLogger newUserLog = new UserLogger();
-				newUserLog.setUserAction(ActionChoiceConstant.CHEF_DISCARD_ITEM);
-				newUserLog.setDateCreated(Timestamp.valueOf(currentDateTime));
-				newUserLog.setUserId(userActionWrapper.getUserWrapper().getId());
+				UserLogger newUserLog = prepareUserLogger(userActionWrapper.getUserWrapper().getId(),userActionWrapper.getActionToPerform());
 				userLogsToInsert.add(newUserLog);
-				createUserLogs();
+				createUserLogs(userLogsToInsert);
 				return false;
 			}
-	
 	}
 
-	private void createUserLogs() throws SQLException {
+	public void createUserLogs(List<UserLogger> userLogsToInsert) throws SQLException {
 		int rowSaved = repository.save(userLogsToInsert);
-		System.out.println(rowSaved + " user logs saved successfully");
-		//return String.valueOf(rowSaved);
+		System.out.println(rowSaved + " user logs saved successfully");		
+	}
+
+	public UserLogger prepareUserLogger(int userId, String userAction) {
+		UserLogger newUserLog = new UserLogger();
+		newUserLog.setUserAction(userAction);
+		newUserLog.setDateCreated(Timestamp.valueOf(currentDateTime));
+		newUserLog.setUserId(userId);
+		return newUserLog;
 		
 	}
-
 }

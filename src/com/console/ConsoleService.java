@@ -12,7 +12,7 @@ public class ConsoleService {
 
 	public static String getUserInput(String message) {
 		System.out.println(message);
-		Scanner scanner = input.get(); //getting the scanner instance.
+		Scanner scanner = input.get(); // getting the scanner instance.
 		String userInput = scanner.nextLine();
 		return userInput;
 	}

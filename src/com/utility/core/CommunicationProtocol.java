@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 import com.google.gson.annotations.Expose;
 
-public class CommunicationProtocol {
+public class CommunicationProtocol { 
 	 public int size;
 	    @Expose
 		private String data;

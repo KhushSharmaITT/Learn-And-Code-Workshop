@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.utility.user.UserWrapper;
 
 public class UserPayload {
-    @Expose
+	@Expose
 	private UserWrapper userWrapper;
 
 	public void setUserWrapperDetails(UserWrapper userWrapper) {
@@ -12,6 +12,6 @@ public class UserPayload {
 	}
 
 	public UserWrapper getUserWrapperDetails() {
-		return this.userWrapper; 
+		return this.userWrapper;
 	}
 }

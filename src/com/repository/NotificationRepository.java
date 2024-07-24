@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.model.Menu;
 import com.model.Notification;
 
 public class NotificationRepository<T> implements Repository<T> {

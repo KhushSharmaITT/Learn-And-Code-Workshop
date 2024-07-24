@@ -45,8 +45,7 @@ public class UserLoggerRepository<T> implements Repository<T> {
 	            sql.append("Date_Created");
 	            values.append("?");
 	            first = false;
-	        }
-
+	        }	        
 	        sql.append(") ");
 	        values.append(")");
 	        sql.append(values);

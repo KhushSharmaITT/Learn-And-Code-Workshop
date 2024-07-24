@@ -10,7 +10,7 @@ public class ResponseWrapper {
 	@Expose
 	public Exception exception;
 
-	public ResponseWrapper() {
+	public ResponseWrapper() { 
 
 	}
 

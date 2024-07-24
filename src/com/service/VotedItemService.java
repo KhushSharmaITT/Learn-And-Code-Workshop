@@ -8,9 +8,7 @@ import java.util.List;
 import com.console.ConsoleService;
 import com.exception.DuplicateDataException;
 import com.google.gson.reflect.TypeToken;
-import com.model.Menu;
 import com.model.VotedItem;
-import com.payload.VotedItemPayload;
 import com.repository.VotedItemRepository;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
@@ -39,7 +37,6 @@ public class VotedItemService {
 		return userActionWrapper;
 	}
 	public String saveVotedItem(List<VotedItem> votedItems) throws SQLException, DuplicateDataException {
-		// TODO Auto-generated method stub
 		int rowSaved;
 		List<VotedItem> duplicateResponses = new ArrayList<>();
 		for(VotedItem votedItem : votedItems) {

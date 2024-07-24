@@ -3,9 +3,8 @@ package com.utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class SocketHelper {
 	private static SocketHelper socketHelper;
@@ -27,9 +26,9 @@ public class SocketHelper {
         return inputReader;
     }
 
-    public OutputStreamWriter getWriter(Socket socket) throws IOException {
-        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
-        return outputStreamWriter;
+    public PrintWriter getWriter(Socket socket) throws IOException {
+        final PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+        return printWriter;
     }
 
 }
