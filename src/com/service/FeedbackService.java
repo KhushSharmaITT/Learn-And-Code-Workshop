@@ -33,7 +33,16 @@ public class FeedbackService {
             "tempting", "velvety", "divine", "crisp", "wholesome", 
             "perfectly cooked", "crave-worthy", "savory", "golden-brown", 
             "sumptuous", "well-balanced", "top-quality", "premium", 
-            "mouthwatering", "decadent", "ambrosial", "spicy", "palatable"
+            "mouthwatering", "decadent", "ambrosial", "palatable",
+            "Admirable", "Amazing", "Awesome", "Beautiful", "Blissful", "Brilliant", "Charming", "Cheerful",
+            "Comforting", "Compassionate", "Confident", "Delightful", "Ebullient", "Ecstatic", "Effervescent",
+            "Elated", "Elegant", "Enchanting", "Encouraging", "Energetic", "Enthusiastic", "Euphoric", "Excellent",
+            "Exquisite", "Fabulous", "Fantastic", "Fascinating", "Flawless", "Friendly", "Glorious", "Grateful",
+            "Happy", "Heartwarming", "Impressive", "Incredible", "Inspiring", "Joyful", "Jubilant", "Lively",
+            "Lovely", "Magnificent", "Marvelous", "Miraculous", "Optimistic", "Outstanding", "Passionate", "Peaceful",
+            "Phenomenal", "Pleasant", "Pleasing", "Radiant", "Remarkable", "Resplendent", "Sensational", "Spectacular",
+            "Splendid", "Stellar", "Stupendous", "Superb", "Terrific", "Thrilling", "Tremendous", "Triumphant",
+            "Uplifting", "Wonderful", "Wondrous"
         ));
 	private final HashSet<String> badWords = new HashSet<>(Arrays.asList(
             "bland", "overcooked", "undercooked", "soggy", "stale", 
@@ -44,7 +53,17 @@ public class FeedbackService {
             "greasy", "artificial", "contaminated", "dry", "hard", 
             "stiff", "bland", "chewy", "flavorless", "underdone", 
             "fishy", "rancid", "gamey", "lukewarm", "cloying", 
-            "over-seasoned", "watery", "mealy", "starchy", "limp","bad"
+            "over-seasoned", "watery", "mealy", "starchy", "limp","bad",
+            "Abysmal", "Aggravating", "Angry", "Annoying", "Anxious", "Appalling", "Atrocious", "Awful", "Bad", "Bitter",
+            "Boring", "Contemptible", "Creepy", "Cruel", "Deplorable", "Depressing", "Despicable", "Detestable", 
+            "Disappointing", "Disgusting", "Dreadful", "Embarrassing", "Enraging", "Envious", "Exasperating", 
+            "Feeble", "Filthy", "Frightening", "Frustrating", "Gloomy", "Grim", "Gross", "Gruesome", "Hateful", 
+            "Horrible", "Hostile", "Humiliating", "Hurtful", "Inferior", "Infuriating", "Insipid", "Irritating", 
+            "Jealous", "Lousy", "Malicious", "Mediocre", "Menacing", "Miserable", "Nasty", "Nauseating", "Nefarious", 
+            "Noxious", "Offensive", "Outrageous", "Pathetic", "Petty", "Poor", "Repellent", "Reprehensible", 
+            "Revolting", "Ridiculous", "Sad", "Shameful", "Shocking", "Sickening", "Terrible", "Terrifying", 
+            "Tragic", "Unbearable", "Unpleasant", "Unsatisfactory", "Unspeakable", "Unwelcome", "Vicious", "Vile", 
+            "Villainous", "Wicked", "Wretched"
         ));
 	private final HashSet<String> neutralWords = new HashSet<>(Arrays.asList(
             "baked", "boiled", "steamed", "grilled", "sautéed", 
@@ -56,7 +75,14 @@ public class FeedbackService {
             "crushed", "pickled", "seasoned", "mixed", "shredded", 
             "cubed", "crumbled", "glazed", "grated", "layered", 
             "melted", "ground", "pureed", "refrigerated", "smoked", 
-            "sprouted", "vacuum-packed", "wrapped", "browned", "folded"
+            "sprouted", "vacuum-packed", "wrapped", "browned", "folded",
+            "Acceptable", "Accurate", "Adequate", "Average", "Balanced", "Basic", "Calm", "Cautious", "Central",
+            "Clear", "Common", "Competent", "Composed", "Conventional", "Correct", "Customary", "Decent", "Definite",
+            "Direct", "Dispassionate", "Distinct", "Everyday", "Fair", "Factual", "Functional", "General", "Genuine",
+            "Impartial", "Indifferent", "Informative", "Moderate", "Natural", "Neutral", "Normal", "Objective",
+            "Ordinary", "Plain", "Predictable", "Primary", "Regular", "Reliable", "Routine", "Satisfactory", "Simple",
+            "Sincere", "Standard", "Steady", "Typical", "Unbiased", "Uncertain", "Unemotional", "Unexceptional",
+            "Unremarkable", "Unvaried", "Usual", "Verifiable"
         ));
 	 private final HashSet<String> negationWords = new HashSet<>(Arrays.asList(
 	            "not", "no", "never", "none", "neither", "nor", 
@@ -106,8 +132,7 @@ public class FeedbackService {
 		String commentToProcess[] = comment.split("\\s+");
 		Hashtable<String,Integer> wordsWithScore = new Hashtable<>();
 		int positiveCount = 0, negativeCount = 0, neutralCount = 0;
-		//String finalSentiment;
-		int positiveWeight = 3;
+		int positiveWeight = 4;
         int negativeWeight = -1;
         int neutralWeight = 1;
         int maxPossibleSentimentScore = 10;
@@ -151,10 +176,8 @@ public class FeedbackService {
 		 int cumulativeSentimentScore = positiveCount * positiveWeight 
                                         + negativeCount * negativeWeight 
                                         + neutralCount * neutralWeight;
-		 System.out.print("score--"+cumulativeSentimentScore);
 		 int K = maxPossibleSentimentScore / 2;
 		 double weightedSentiment = (double)(cumulativeSentimentScore + K) / (maxPossibleSentimentScore + K) * 5;
-		 System.out.print("score--"+weightedSentiment);
 		 weightedSentiment = Math.max(1, Math.min(5, weightedSentiment));
 		 return weightedSentiment;
 	}
@@ -212,19 +235,6 @@ public class FeedbackService {
 		updateFeedbacks(feedbacksToUpdate);
 		DiscardItemRepository<DiscardItem> discardItemRepository = new DiscardItemRepository<>();
 		discardItemRepository.save(discardedItemList);
-		
-//		StringBuilder result = new StringBuilder();
-//		result.append(String.format("%-10s %-20s %-10s%n", "Menu ID", "MenuItem", "Average Rating"));
-//		result.append("---------------------------------------\n");
-//		//System.out.println(menuList);
-//		for (DiscardItem discardItem : discardedItemList) {
-//	        result.append(String.format("%-10d %-20s %-10.2f%n",
-//	        		discardItem.getMenuId(),
-//	        		discardItem.getItemName(),
-//	        		discardItem.getAverageRating()
-//	        ));
-//	    }
-//		System.out.println(result.toString());
 	    return discardedItemList;
 	}
 
@@ -232,7 +242,6 @@ public class FeedbackService {
 		int rowsUpdated;
 		rowsUpdated = repository.update(feedbacksToUpdate);
 		System.out.println(rowsUpdated);
-		//return String.valueOf(rowsUpdated);
 		
 	}
 
@@ -242,7 +251,6 @@ public class FeedbackService {
 		double alpha = 0.5; 
 	    double beta = 0.5;
 	    double combinedScore = alpha * sentimentScore + beta * rating;
-	    //boolean isItemDiscarded = combinedScore < 2;
 	    return combinedScore;
 	}
 }

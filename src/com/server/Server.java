@@ -16,17 +16,13 @@ public class Server {
 
             while(true) {
             	Socket clientSocket = listenerSocket.accept();
-            	executor.submit(new ClientThread(clientSocket));
+            	executor.submit(new ServerThread(clientSocket));
             }
         }catch(IOException issue){
         	issue.printStackTrace();
         }finally {
         	executor.shutdown();
         }
-            //final Thread serverThread = new Thread(new ServerThread(listenerSocket.accept()));
-            //serverThread.start();
-        // Close connection
-        //listenerSocket.close();
     }
 }
 

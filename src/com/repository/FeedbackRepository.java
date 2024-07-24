@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.model.Feedback;
-import com.model.Menu;
-import com.model.VotedItem;
 
 public class FeedbackRepository<T> implements Repository<T> {
-
 
 	@Override
 	public T find(String id) throws SQLException {
@@ -146,7 +143,6 @@ public class FeedbackRepository<T> implements Repository<T> {
 	        if (newFeedback.getRating() > 0.0f) statement.setFloat(paramIndex++, newFeedback.getRating());
 	        if (newFeedback.getSentiments() != null && !newFeedback.getSentiments().isEmpty()) statement.setString(paramIndex++, newFeedback.getSentiments());
 	        if (newFeedback.getSentimentScore() > 0.0f) statement.setDouble(paramIndex++, newFeedback.getSentimentScore());
-	        //if (newFeedback.getId() > 0) statement.setInt(paramIndex++, newItem.getMenuId());
 	        System.out.println(statement.toString());
 	        rowSaved += databaseHelper.write(statement);
 		}
@@ -175,19 +171,6 @@ public class FeedbackRepository<T> implements Repository<T> {
 	            updateQuery.append("Is_Processed = ?");
 	            first = false;
 	        }
-//	        if (updatedMenu.getAvailabilityStatus() != null && !updatedMenu.getAvailabilityStatus().isEmpty()) {
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("AvailabilityStatus = ?");
-//	            first = false;
-//	        }
-//	        if (updatedMenu.getMealType() != null && !updatedMenu.getMealType().isEmpty()) {
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("MealType = ?");
-//	        }
-//	        if (updatedMenu.getScore() != 0.0f ){
-//	            if (!first) updateQuery.append(", ");
-//	            updateQuery.append("Score = ?");
-//	        }
 		
 	        updateQuery.append(" WHERE MenuId = ?");
 	        System.out.println(updateQuery.toString());

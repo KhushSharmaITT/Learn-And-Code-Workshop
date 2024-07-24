@@ -7,8 +7,12 @@ import java.sql.SQLException;
 
 public interface DatabaseHelper {
 	public Connection getConnection();
+
 	public int write(PreparedStatement statement) throws SQLException;
-    public ResultSet read(String selectQueryText, String Id) throws SQLException;
+
+	public ResultSet read(String selectQueryText, String Id) throws SQLException;
+
 	ResultSet readAll(String selectQueryText) throws SQLException;
+
 	public int delete(String deleteQuery, String Id) throws SQLException;
 }

@@ -10,7 +10,6 @@ import com.exception.DiscardMenuDurationException;
 import com.google.gson.reflect.TypeToken;
 import com.model.DiscardItem;
 import com.model.Menu;
-import com.model.UserLogger;
 import com.repository.DiscardItemRepository;
 import com.utility.core.JsonWrapper;
 import com.utility.core.RequestWrapper;
@@ -19,15 +18,15 @@ import com.utility.core.UserActionWrapper;
 public class DiscardItemService {
 	private Type type;
 	private JsonWrapper<UserActionWrapper<DiscardItem>> jsonWrapper;
-	DiscardItemRepository<DiscardItem> repository = new DiscardItemRepository<>();
+	private DiscardItemRepository<DiscardItem> repository;
 	
 	public DiscardItemService() {
 		type = new TypeToken<UserActionWrapper<DiscardItem>>() {}.getType();
 		jsonWrapper = new JsonWrapper<>(type);
         jsonWrapper.setPrettyFormat(true);
+        repository = new DiscardItemRepository<>();
 	}
 	public UserActionWrapper<DiscardItem> prepareUserActionWrapper(RequestWrapper requestWrapper) {
-		System.out.println("in prepare userAction");
 		UserActionWrapper<DiscardItem> userActionWrapper = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
 		return userActionWrapper;
 	}
@@ -38,14 +37,13 @@ public class DiscardItemService {
 		return discardItem;
 	}
 	public UserActionWrapper<DiscardItem> prepareUserActionWrapperForFeedback(RequestWrapper requestWrapper) {
-		Type type = new TypeToken<UserActionWrapper<DiscardItem>>() {}.getType();
-		JsonWrapper<UserActionWrapper<DiscardItem>> jsonWrapper = new JsonWrapper<>(type);
-        jsonWrapper.setPrettyFormat(true);
+//		Type type = new TypeToken<UserActionWrapper<DiscardItem>>() {}.getType();
+//		JsonWrapper<UserActionWrapper<DiscardItem>> jsonWrapper = new JsonWrapper<>(type);
+//        jsonWrapper.setPrettyFormat(true);
         UserActionWrapper<DiscardItem> userActionWrapper = jsonWrapper.convertIntoObject(requestWrapper.jsonString);
 		return userActionWrapper;
 	}
 	public String update(List<DiscardItem> actionData) throws SQLException {
-		System.out.println("Updated discard feedback");
 		int rowUpdated = 0;
 		rowUpdated = repository.update(actionData);
 		return String.valueOf(rowUpdated);
@@ -58,7 +56,6 @@ public class DiscardItemService {
 		return discardItem;
 	}
 	public List<Menu> prepareItemsToDelete(UserActionWrapper<DiscardItem> userActionWrapper) throws SQLException, DiscardMenuDurationException {
-		System.out.println("In item to delete");
 		if(checkProcessDuration(userActionWrapper)) {
 			throw new DiscardMenuDurationException("UserId = "+ userActionWrapper.getUserWrapper().getId()+" already perform this operation. This operation should be done after 30 days");
 		}

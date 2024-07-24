@@ -17,57 +17,53 @@ public class ChefRecommendPayloadHelper<T> implements Payload<T> {
 	@Expose
 	private ResponseWrapper responseWrapper;
 	private Hashtable<String, Object> userInput;
-	
+
 	public ChefRecommendPayloadHelper(Hashtable<String, Object> userInput) {
 		this.userInput = userInput;
 	}
+
 	@Override
 	public T getRequestPayload() {
-		Type type = new TypeToken<UserActionWrapper<ChefRecommendation>>() {}.getType();
-		System.out.println("In menu get payload");
+		Type type = new TypeToken<UserActionWrapper<ChefRecommendation>>() {
+		}.getType();
 		JsonWrapper<UserActionWrapper<ChefRecommendation>> jsonWrapper = new JsonWrapper<>(type);
 		try {
 			requestWrapper = new RequestWrapper();
 			requestWrapper.jsonString = jsonWrapper.convertIntoJson(getChefRecommendationPayload());
 			requestWrapper.protocolFormat = ProtocolConstant.JSON;
 			requestWrapper.exception = null;
-		}
-		catch(Exception issue) {
+		} catch (Exception issue) {
 			requestWrapper.jsonString = null;
 			requestWrapper.exception = issue;
 		}
-		System.out.println("32 transmission"+requestWrapper);
+		System.out.println("32 transmission" + requestWrapper);
 		return (T) requestWrapper;
 	}
 
 	@Override
 	public T getResponsePayload() {
-		Type type = new TypeToken<UserActionWrapper<ChefRecommendation>>() {}.getType();
+		Type type = new TypeToken<UserActionWrapper<ChefRecommendation>>() {
+		}.getType();
 		System.out.println("In menu get payload");
 		JsonWrapper<UserActionWrapper<ChefRecommendation>> jsonWrapper = new JsonWrapper<>(type);
-        jsonWrapper.setPrettyFormat(true);
+		jsonWrapper.setPrettyFormat(true);
 		try {
 			responseWrapper = new ResponseWrapper();
 			responseWrapper.jsonString = jsonWrapper.convertIntoJson(getChefRecommendationPayload());
 			responseWrapper.protocolFormat = ProtocolConstant.JSON;
 			responseWrapper.exception = null;
-		}
-		catch(Exception issue) {
+		} catch (Exception issue) {
 			requestWrapper.jsonString = null;
 			requestWrapper.exception = issue;
 		}
-		System.out.println("32 transmission"+requestWrapper);
+		System.out.println("32 transmission" + requestWrapper);
 		return (T) responseWrapper;
-		
+
 	}
-	
+
 	private UserActionWrapper<ChefRecommendation> getChefRecommendationPayload() {
 		String userActionChoice = (String) userInput.keySet().toArray()[0];
-		return (UserActionWrapper<ChefRecommendation>)userInput.get(userActionChoice);
-//		if(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION == userInput.keySet().toArray()[0]) {
-//			return (UserActionWrapper<ChefRecommendation>)userInput.get(ActionChoiceConstant.EMPLOYEE_VIEW_CHEF_RECOMMENDATION);
-//	}
-		//return null;
+		return (UserActionWrapper<ChefRecommendation>) userInput.get(userActionChoice);
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.service;
 
 import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +10,9 @@ import com.google.gson.reflect.TypeToken;
 import com.model.ChefRecommendation;
 import com.model.Menu;
 import com.model.UserProfile;
-//import com.model.Menu;
 import com.repository.ChefRecommendationRepository;
 import com.repository.UserProfileRepository;
 import com.utility.core.JsonWrapper;
-//import com.repository.MenuRepository;
 import com.utility.core.RequestWrapper;
 import com.utility.core.UserActionWrapper;
 import com.utility.user.UserWrapper;
@@ -57,12 +54,10 @@ public class ChefRecommendationService {
 				             + "ON vi.MenuId = m.MenuId WHERE DATE(vi.Date_Created) = CURDATE() GROUP BY(vi.MenuId)";
         votedMenu = repository.findRecords(queryToFind);
         StringBuilder result = new StringBuilder();
-		result.append(String.format("%-10s %-20s %-10s%n", "Menu Id", "MenuName", "Vote Count","Score"));
+		result.append(String.format("%-10s %-20s %-15s %-10s%n", "Menu Id", "MenuName", "Vote Count","Score"));
 		result.append("---------------------------------------------------\n");
-		//System.out.println(menuList);
 		for (ChefRecommendation chefRecommendation : votedMenu) {
-	        result.append(String.format("%-10d %-20s %-10d %-10.2f%n",
-	            //chefRecommendation.getId(),
+	        result.append(String.format("%-10d %-20s %-15d %-10.2f%n",
 	            chefRecommendation.getMenuId(),
 	            chefRecommendation.getMenuName(),
 	            chefRecommendation.getVoteCount(),
@@ -73,7 +68,7 @@ public class ChefRecommendationService {
 		return result.toString();
 	}
 	
-	public String viewChefsRecommendation() throws SQLException {
+	public List<ChefRecommendation> getChefsRecommendation() throws SQLException {
 			List<ChefRecommendation> chefsRecommendations  = new ArrayList<>();
 			List<ChefRecommendation> actualChefsRecommendations = new ArrayList<>();
 			for(UserProfile userProfile : currentUserProfile) {
@@ -81,25 +76,7 @@ public class ChefRecommendationService {
 				chefsRecommendations = repository.findRecords(queryToFind);
 				actualChefsRecommendations.addAll(chefsRecommendations);
 			}
-			System.out.println("printing the data");
-			StringBuilder result = new StringBuilder();
-			result.append(String.format("%-10s %-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "Menu ID", "MenuItem", "MealType", "Score", "Preference", "SpiceLevel", "CuisinePreference", "SweetTooth"));
-			result.append("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
-			//System.out.println(menuList);
-			for (ChefRecommendation chefRecommendation : actualChefsRecommendations) {
-		        result.append(String.format("%-10d %-20s %-20s %-20.2f %-20s %-20s %-20s %-20s%n",
-		            chefRecommendation.getMenuId(),
-		            chefRecommendation.getMenuName(),
-		            chefRecommendation.getMealType(),
-		            chefRecommendation.getScore(),
-		            chefRecommendation.getPreference(),
-		            chefRecommendation.getSpiceLevel(),
-		            chefRecommendation.getCuisinePreference(),
-		            chefRecommendation.getSweetTooth()
-		        ));
-		    }
-			System.out.println(result.toString());
-;		return result.toString();
+		return actualChefsRecommendations;
 		
 	}
 	public void prepareItemsForRecommendation(UserWrapper userWrapper) throws SQLException {

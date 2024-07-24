@@ -13,7 +13,6 @@ public class VotedItemRepository<T> implements Repository<T> {
 
 	@Override
 	public int save(List<T> entitiesToSave) throws SQLException {
-		// TODO Auto-generated method stub
 		int rowSaved = 0;
 		for(T votedItem : entitiesToSave) {
 		 VotedItem newVotedItem = (VotedItem)votedItem;
@@ -38,24 +37,6 @@ public class VotedItemRepository<T> implements Repository<T> {
 	            values.append("?");
 	            first = false;
 	        }
-//	        if (newItem.getAvailabilityStatus() != null) {
-//	            if (!first) {
-//	                sql.append(", ");
-//	                values.append(", ");
-//	            }
-//	            sql.append("AvailabilityStatus");
-//	            values.append("?");
-//	            first = false;
-//	        }
-//	        if (newItem.getMealType() != null) {
-//	            if (!first) {
-//	                sql.append(", ");
-//	                values.append(", ");
-//	            }
-//	            sql.append("MealType");
-//	            values.append("?");
-//	        }
-	        
 	        sql.append(", ");
             values.append(", ");
             sql.append("Vote");
@@ -64,14 +45,12 @@ public class VotedItemRepository<T> implements Repository<T> {
 	        sql.append(") ");
 	        values.append(")");
 	        sql.append(values);
-	        System.out.println(sql.toString());
 	        Connection databaseConnection =  databaseHelper.getConnection();
 	        final PreparedStatement statement = databaseConnection.prepareStatement(sql.toString());
 	        int paramIndex = 1;
 	        if(newVotedItem.getMenuId() > 0) statement.setInt(paramIndex++, newVotedItem.getMenuId());
 	        if(newVotedItem.getUserId() > 0) statement.setInt(paramIndex++, newVotedItem.getUserId());
 	        statement.setInt(paramIndex++, 1);
-	        System.out.println(statement.toString());
 	        rowSaved = databaseHelper.write(statement);
 	    }
 		return rowSaved;

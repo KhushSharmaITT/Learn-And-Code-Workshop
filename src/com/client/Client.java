@@ -9,7 +9,7 @@ import com.exception.InvalidArgumentException;
 import com.utility.ActionChoiceConstant;
 import com.utility.user.UserWrapper;
 
-public class Client{
+public class Client {
 
 	public static void main(String... args) throws UnknownHostException, IOException {
 		final ClientInputHandler clientInputHandler = ClientInputHandler.getInstance();
@@ -22,8 +22,8 @@ public class Client{
 		try {
 			clientInputHandler.processArguments(inputsToAuthenticate);
 			clientInputHandler.processOperation();
-		}catch(InvalidArgumentException issue) {
-            System.out.println("Argument Issue : "+issue.getLocalizedMessage()); 
-        }
-    }
+		} catch (InvalidArgumentException issue) {
+			System.out.println("Argument Issue : " + issue.getLocalizedMessage());
+		}
+	}
 }

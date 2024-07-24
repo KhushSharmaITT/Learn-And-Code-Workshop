@@ -34,7 +34,11 @@ public class MenuService {
 		Menu menuItem = new Menu();
 		menuItem.setName(ConsoleService.getUserInput("Enter Name :"));
 		menuItem.setPrice(Float.parseFloat(ConsoleService.getUserInput("Enter Price :")));
-		menuItem.setMealType(ConsoleService.getUserInput("Enter Meal Type :"));
+		menuItem.setMealType(ConsoleService.getUserInput("Enter Meal Type(Breakfast/ Lunch/ Dinner) :"));
+		menuItem.setPreference(ConsoleService.getUserInput("Enter food preference :"));
+		menuItem.setSpiceLevel(ConsoleService.getUserInput("Enter food spice level :"));
+		menuItem.setCuisinePreference(ConsoleService.getUserInput("Enter food cuisine preference :"));
+		menuItem.setSweetTooth(ConsoleService.getUserInput("Is it a sweet(Yes/ No) :"));
 		menuItem.setAvailabilityStatus("Yes");
 		menuItem.setScore(0.0f);
 		return menuItem;
@@ -56,21 +60,6 @@ public class MenuService {
 		System.out.println("In view menu");
 		List<Menu> menuList = new ArrayList<>();
 		menuList = repository.findAll();
-//		StringBuilder result = new StringBuilder();
-//		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
-//		result.append("-------------------------------------------------------------------------------------\n");
-//		//System.out.println(menuList);
-//		for (Menu menu : menuList) {
-//	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
-//	            menu.getMenuId(),
-//	            menu.getName(),
-//	            menu.getPrice(),
-//	            menu.getAvailabilityStatus(),
-//	            menu.getScore(),
-//	            menu.getMealType()
-//	        ));
-//	    }
-//		System.out.println(result.toString());
 		return menuList;
 	}
 
@@ -78,7 +67,6 @@ public class MenuService {
 		Menu menuItem = new Menu();
 		menuItem.setMenuId(Integer.parseInt(ConsoleService.getUserInput("Enter Id :")));
 		menuItem.setName(ConsoleService.getUserInput("Enter New Name (press Enter to keep current): "));
-		//menuItem.setPrice(Float.parseFloat(ConsoleService.getUserInput("Enter New Price (press Enter to keep current): ")));
 		menuItem.setMealType(ConsoleService.getUserInput("Enter New Meal Type (Breakfast/Lunch/Dinner) (press Enter to keep current): "));
 		menuItem.setAvailabilityStatus(ConsoleService.getUserInput("Enter new availability status (Yes/No) (press Enter to keep current):"));
 		String updatedPrice = ConsoleService.getUserInput("Enter New Price (press Enter to keep current): ");
@@ -115,7 +103,6 @@ public class MenuService {
         double beta = 0.5;
 		final FeedbackRepository<Feedback> feedbackRepository = new FeedbackRepository<>();
 		List<Feedback> feedbacksToUpdate = new ArrayList<>();
-		//final FeedbackService feedbackService = new FeedbackService();
 		List<Feedback> feedbackList = feedbackRepository.findAll(); // only query those feedbacks which is not processed.
 		Hashtable<Integer, Double> scoreMap = new Hashtable<>();
         for (Feedback feedback : feedbackList) {
@@ -165,13 +152,9 @@ public class MenuService {
 			List<Menu> mealSpecificMenu = repository.findRecords(queryToFind);
 			menuList.addAll(mealSpecificMenu);
 		}
-		//implement a logic that a menu is not recommended repeatedly. search the above menu id in the chef recommendation whether it is recommended yesterday a day before yesterday and a day before also.
-		//String queryToFind = "SELECT * FROM Menu WHERE AvailabilityStatus = 'Yes' ORDER BY Score DESC LIMIT 3";
-		//menuList = repository.findRecords(queryToFind);
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("%-10s %-20s %-10s %-20s %-10s %-15s%n", "Menu ID", "Name", "Price", "Availability", "Score", "Meal Type"));
 		result.append("--------------------------------------------------------------------------------------\n");
-		//System.out.println(menuList);
 		for (Menu menu : menuList) {
 	        result.append(String.format("%-10d %-20s %-10.2f %-20s %-10.2f %-15s%n",
 	            menu.getMenuId(),
@@ -187,13 +170,12 @@ public class MenuService {
 	}
 
 	public List<Menu> getRolledOutItems(String[] menuIds) {
-		List<Menu> itemsToRolledOut = new ArrayList();
+		List<Menu> itemsToRolledOut = new ArrayList<>();
 		for(String id : menuIds) {
 			Menu itemTorolledOut = new Menu();
 			itemTorolledOut.setMenuId(Integer.parseInt(id));
 			itemsToRolledOut.add(itemTorolledOut);
 		}
-		// TODO Auto-generated method stub
 		return itemsToRolledOut;
 	}
 

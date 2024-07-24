@@ -37,7 +37,6 @@ public class VotedItemService {
 		return userActionWrapper;
 	}
 	public String saveVotedItem(List<VotedItem> votedItems) throws SQLException, DuplicateDataException {
-		// TODO Auto-generated method stub
 		int rowSaved;
 		List<VotedItem> duplicateResponses = new ArrayList<>();
 		for(VotedItem votedItem : votedItems) {

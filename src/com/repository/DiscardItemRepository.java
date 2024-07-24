@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.model.DiscardItem;
-import com.model.Menu;
 
 public class DiscardItemRepository<T> implements Repository<T> {
 

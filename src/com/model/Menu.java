@@ -16,6 +16,15 @@ public class Menu {
 	private double score;
 	@Expose
 	private String name;
+	@Expose
+	private String preference;
+	@Expose
+	private String spiceLevel;
+	@Expose
+	private String cuisinePreference;
+	@Expose
+	private String sweetTooth;
+	
 	public int getMenuId() {
 		return menuId;
 	}
@@ -51,5 +60,29 @@ public class Menu {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getPreference() {
+		return preference;
+	}
+	public void setPreference(String preference) {
+		this.preference = preference;
+	}
+	public String getSpiceLevel() {
+		return spiceLevel;
+	}
+	public void setSpiceLevel(String spiceLevel) {
+		this.spiceLevel = spiceLevel;
+	}
+	public String getCuisinePreference() {
+		return cuisinePreference;
+	}
+	public void setCuisinePreference(String cuisinePreference) {
+		this.cuisinePreference = cuisinePreference;
+	}
+	public String getSweetTooth() {
+		return sweetTooth;
+	}
+	public void setSweetTooth(String sweetTooth) {
+		this.sweetTooth = sweetTooth;
 	}
 }
